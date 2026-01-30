@@ -1,0 +1,183 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import ChallengeCard from '@/components/ChallengeCard';
+import { mockChallenges } from '@/lib/mockChallenges';
+import { Challenge } from '@/lib/types';
+
+export default function ChallengesPage() {
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [participantCount, setParticipantCount] = useState(0);
+
+  useEffect(() => {
+    // Load challenges
+    setTimeout(() => {
+      setChallenges(mockChallenges);
+    }, 500);
+
+    let intervalId: ReturnType<typeof setInterval> | null = null;
+
+    // Fetch real participant count for Show Up challenge
+    const fetchParticipants = async () => {
+      try {
+        const response = await fetch('/api/participants?challenge_id=show-up');
+        if (response.ok) {
+          const data = await response.json();
+          setParticipantCount(data.participants);
+        }
+      } catch (error) {
+        console.error('Error fetching participant count:', error);
+        // Fallback to mock data
+        setParticipantCount(mockChallenges[0]?.participants || 0);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchParticipants();
+    intervalId = setInterval(fetchParticipants, 10000);
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, []);
+
+  // Get featured challenge (Show Up)
+  const featuredChallenge = challenges.find(c => c.id === 'show-up');
+  const otherChallenges = challenges.filter(c => c.id !== 'show-up');
+
+  return (
+    <div className="min-h-screen bg-primary-light-mode-blue dark:bg-primary-dark-blue pb-24">
+      {/* Hero Section */}
+      <div className="bg-primary-modal-light dark:bg-primary-light-blue text-primary-white dark:text-primary-white py-6 px-4">
+        <div className="container mx-auto max-w-6xl text-center">
+          <h1 className="text-3xl font-bold mb-1">🚀 Base Challenge</h1>
+          <p className="text-sm opacity-90">Earn BCP by participating in challenges</p>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        {/* Featured Challenge */}
+        {!isLoading && featuredChallenge && (
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold text-primary-dark-blue dark:text-primary-white mb-4">
+              ⭐ Featured Challenge
+            </h2>
+            <a href={`/challenges/${featuredChallenge.id}`}>
+              <div className="bg-white dark:bg-primary-light-blue rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-accent-green dark:border-accent-green relative overflow-hidden">
+                {/* Gradient background */}
+                <div className="absolute top-0 right-0 w-40 h-40 bg-accent-green/5 rounded-full -z-0"></div>
+                
+                <div className="relative z-10 flex items-start justify-between mb-6">
+                  <div>
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-6xl">{featuredChallenge.thumbnail}</span>
+                      <div>
+                        <h3 className="text-3xl font-bold text-primary-dark-blue dark:text-primary-white">
+                          {featuredChallenge.title}
+                        </h3>
+                        <span className="inline-block mt-2 px-3 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-semibold rounded-full">
+                          Ongoing
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-primary-dark-blue dark:text-accent-light-gray text-lg mb-6">
+                  {featuredChallenge.description}
+                </p>
+
+                {/* Stats */}
+                <div className="grid grid-cols-4 gap-4 mb-6">
+                  <div className="bg-primary-light-mode-blue dark:bg-primary-dark-blue rounded-lg p-4 text-center min-w-0">
+                    <div className="font-bold text-primary-dark-blue dark:text-primary-white leading-tight break-words text-[clamp(0.85rem,2.4vw,1.5rem)]">
+                      {participantCount.toLocaleString()}
+                    </div>
+                    <div className="text-xs text-primary-dark-blue dark:text-accent-gray mt-1">Participants</div>
+                  </div>
+                  <div className="bg-accent-green/10 dark:bg-accent-green/20 rounded-lg p-4 text-center min-w-0">
+                    <div className="font-bold text-accent-green leading-tight break-words text-[clamp(0.85rem,2.4vw,1.5rem)]">
+                      {featuredChallenge.bcpReward}
+                    </div>
+                    <div className="text-xs text-primary-dark-blue dark:text-accent-gray mt-1">BCP/Day</div>
+                  </div>
+                  <div className="bg-primary-light-mode-blue dark:bg-primary-dark-blue rounded-lg p-4 text-center min-w-0">
+                    <div className="font-bold text-primary-dark-blue dark:text-primary-white leading-tight break-words text-[clamp(0.85rem,2.4vw,1.5rem)]">
+                      ∞
+                    </div>
+                    <div className="text-xs text-primary-dark-blue dark:text-accent-gray mt-1">Duration</div>
+                  </div>
+                  <div className="bg-primary-light-mode-blue dark:bg-primary-dark-blue rounded-lg p-4 text-center min-w-0">
+                    <div className="font-bold text-primary-dark-blue dark:text-primary-white leading-tight break-words text-[clamp(0.85rem,2.4vw,1.5rem)]">
+                      {featuredChallenge.entryFee}
+                    </div>
+                    <div className="text-xs text-primary-dark-blue dark:text-accent-gray mt-1">USDC</div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <button className="flex-1 bg-accent-green hover:bg-accent-green-dark text-primary-dark-blue py-3 rounded-lg font-bold hover:shadow-lg transition-all">
+                    Join Challenge (0.3 USDC) →
+                  </button>
+                </div>
+              </div>
+            </a>
+          </div>
+        )}
+
+        {/* Other Challenges */}
+        <div>
+          <h2 className="text-2xl font-bold text-primary-dark-blue dark:text-primary-white mb-4">
+            More Challenges
+          </h2>
+
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="bg-white dark:bg-primary-light-blue rounded-2xl p-6 shadow-lg animate-pulse"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="w-12 h-12 bg-accent-gray dark:bg-gray-700 rounded"></div>
+                    <div className="w-16 h-6 bg-accent-gray dark:bg-gray-700 rounded-full"></div>
+                  </div>
+                  <div className="h-6 bg-accent-gray dark:bg-gray-700 rounded mb-2"></div>
+                  <div className="h-4 bg-accent-gray dark:bg-gray-700 rounded mb-4"></div>
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="h-16 bg-accent-gray dark:bg-gray-700 rounded-lg"></div>
+                    <div className="h-16 bg-accent-gray dark:bg-gray-700 rounded-lg"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <>
+              {otherChallenges.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {otherChallenges.map((challenge) => (
+                    <ChallengeCard key={challenge.id} challenge={challenge} />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="text-6xl mb-4">🔍</div>
+                  <h3 className="text-xl font-semibold text-primary-dark-blue dark:text-accent-gray mb-2">
+                    More challenges coming soon
+                  </h3>
+                  <p className="text-primary-dark-blue dark:text-accent-gray">
+                    Check back later for new opportunities
+                  </p>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

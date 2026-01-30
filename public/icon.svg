@@ -1,0 +1,29 @@
+<svg viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fireGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0EA5E9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF8C42;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="96" cy="96" r="96" fill="white" stroke="url(#fireGradient)" stroke-width="2"/>
+  
+  <!-- Fire shape -->
+  <path d="M 96 30 C 96 30, 70 60, 70 85 C 70 105, 80 120, 96 120 C 112 120, 122 105, 122 85 C 122 60, 96 30, 96 30 Z" fill="url(#fireGradient)"/>
+  
+  <!-- Inner flame highlight -->
+  <path d="M 96 45 C 92 55, 85 70, 85 85 C 85 98, 90 108, 96 108 C 102 108, 107 98, 107 85 C 107 70, 100 55, 96 45 Z" fill="white" opacity="0.3"/>
+  
+  <!-- Spark 1 -->
+  <circle cx="75" cy="50" r="3" fill="#FFB366" opacity="0.8"/>
+  
+  <!-- Spark 2 -->
+  <circle cx="117" cy="55" r="3" fill="#FFB366" opacity="0.8"/>
+  
+  <!-- Spark 3 -->
+  <circle cx="65" cy="75" r="2.5" fill="#FFB366" opacity="0.6"/>
+  
+  <!-- Spark 4 -->
+  <circle cx="127" cy="78" r="2.5" fill="#FFB366" opacity="0.6"/>
+</svg>

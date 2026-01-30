@@ -1,0 +1,49 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#0a2540;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#1a3a52;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      
+      <rect width="1200" height="630" fill="url(#bgGradient)"/>
+      <circle cx="1100" cy="100" r="150" fill="#00d084" opacity="0.1"/>
+      <circle cx="100" cy="530" r="200" fill="#00d084" opacity="0.08"/>
+      
+      <rect x="100" y="80" width="1000" height="470" rx="20" fill="none" stroke="#00d084" stroke-width="3" opacity="0.3"/>
+      
+      <text x="600" y="150" font-size="48" font-weight="bold" fill="#f0f4f9" text-anchor="middle" font-family="Arial, sans-serif">
+        🔥 Base Challenge Check-In
+      </text>
+      
+      <rect x="150" y="220" width="280" height="240" rx="15" fill="#00d084" opacity="0.15" stroke="#00d084" stroke-width="2"/>
+      <text x="290" y="320" font-size="72" font-weight="bold" fill="#00d084" text-anchor="middle" font-family="Arial, sans-serif">
+        0
+      </text>
+      <text x="290" y="380" font-size="32" fill="#f0f4f9" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold">
+        Week Streak
+      </text>
+      
+      <rect x="570" y="220" width="280" height="240" rx="15" fill="#00d084" opacity="0.15" stroke="#00d084" stroke-width="2"/>
+      <text x="710" y="320" font-size="72" font-weight="bold" fill="#00d084" text-anchor="middle" font-family="Arial, sans-serif">
+        1
+      </text>
+      <text x="710" y="380" font-size="32" fill="#f0f4f9" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold">
+        Total BCP
+      </text>
+      
+      <rect x="990" y="220" width="280" height="240" rx="15" fill="#00d084" opacity="0.15" stroke="#00d084" stroke-width="2"/>
+      <text x="1130" y="320" font-size="72" font-weight="bold" fill="#00d084" text-anchor="middle" font-family="Arial, sans-serif">
+        1
+      </text>
+      <text x="1130" y="380" font-size="32" fill="#f0f4f9" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold">
+        Day Streak
+      </text>
+      
+      <text x="600" y="550" font-size="20" fill="#a5bfeb" text-anchor="middle" font-family="Arial, sans-serif">
+         • 0x0000...c57a
+      </text>
+      <text x="600" y="590" font-size="18" fill="#00d084" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold">
+        www.basechallenge.com
+      </text>
+    </svg>
