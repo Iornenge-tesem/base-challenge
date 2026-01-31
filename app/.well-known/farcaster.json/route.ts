@@ -39,7 +39,7 @@ export async function GET() {
       ogTitle: 'Base Challenge',
       ogDescription: 'Show up daily on Base. Track streaks, climb the leaderboard, and earn BCP.',
       ogImageUrl: `${baseUrl}/icon.png`,
-      noindex: true,
+      noindex: false,
     }),
   })
 }
