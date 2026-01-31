@@ -1,17 +1,9 @@
 'use client'
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import ChallengesPage from './challenges/page'
 
 export default function Home() {
-  const router = useRouter()
-
-  useEffect(() => {
-    // Redirect to challenges page
-    router.push('/challenges')
-  }, [router])
-
-  return null
+  return <ChallengesPage />
 }
 
 
