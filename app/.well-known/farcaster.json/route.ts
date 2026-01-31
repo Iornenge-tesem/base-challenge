@@ -2,7 +2,7 @@ function withValidProperties(properties: Record<string, undefined | string | str
   return Object.fromEntries(
     Object.entries(properties).filter(([_, value]) => {
       if (Array.isArray(value)) return value.length > 0;
-      if (typeof value === 'boolean') return value;
+      if (typeof value === 'boolean') return true; // Always include booleans (both true and false)
       return !!value;
     })
   );
