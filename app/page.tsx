@@ -1,19 +1,32 @@
 'use client'
 
-import { useEffect } from 'react'
-import { redirect } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function Home() {
+  const router = useRouter()
+  const [sdkReady, setSdkReady] = useState(false)
+
   useEffect(() => {
+    // Signal to Base that the mini app is ready
     try {
       const { sdk } = require('@farcaster/miniapp-sdk')
       sdk.actions.ready()
+      console.log('SDK ready signal sent')
     } catch (error) {
-      // SDK not available or error - app still works
-      console.debug('MiniApp SDK not available')
+      console.debug('MiniApp SDK not available or error:', error)
     }
-    redirect('/challenges')
+
+    setSdkReady(true)
   }, [])
+
+  useEffect(() => {
+    // Redirect after SDK is ready
+    if (sdkReady) {
+      router.push('/challenges')
+    }
+  }, [sdkReady, router])
 
   return null
 }
+
