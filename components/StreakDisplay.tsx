@@ -5,7 +5,7 @@ import { useState } from 'react'
 interface StreakDisplayProps {
   streak: number
   points: number
-  address: string
+  address?: string | null
 }
 
 export default function StreakDisplay({ streak, points, address }: StreakDisplayProps) {
