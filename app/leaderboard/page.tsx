@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { mockLeaderboardData } from '@/lib/mockLeaderboard';
 import { LeaderboardEntry } from '@/lib/types';
 import BackButton from '@/components/BackButton';
 
@@ -10,12 +9,22 @@ export default function GlobalLeaderboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [timeframe, setTimeframe] = useState<'all-time' | 'monthly' | 'weekly'>('all-time');
 
-  useEffect(() => {
-    // Simulate loading
-    setTimeout(() => {
-      setLeaderboard(mockLeaderboardData['global-bcp']);
+  const fetchLeaderboard = async () => {
+    try {
+      const response = await fetch('/api/leaderboard');
+      if (response.ok) {
+        const data = await response.json();
+        setLeaderboard(data);
+      }
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+    } finally {
       setIsLoading(false);
-    }, 500);
+    }
+  }
+
+  useEffect(() => {
+    fetchLeaderboard();
   }, [timeframe]);
 
   return (

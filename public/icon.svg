@@ -1,29 +1,64 @@
 <svg viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="fireGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0EA5E9;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#FF8C42;stop-opacity:1" />
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#001F5C;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0052FF;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="checkGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#E8F4FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="orbitGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7B61FF;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#A78BFA;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#C4B5FD;stop-opacity:0.7" />
     </linearGradient>
   </defs>
   
-  <!-- Background circle -->
-  <circle cx="96" cy="96" r="96" fill="white" stroke="url(#fireGradient)" stroke-width="2"/>
+  <!-- Background with rounded corners effect -->
+  <rect width="192" height="192" rx="42" fill="url(#bgGradient)"/>
   
-  <!-- Fire shape -->
-  <path d="M 96 30 C 96 30, 70 60, 70 85 C 70 105, 80 120, 96 120 C 112 120, 122 105, 122 85 C 122 60, 96 30, 96 30 Z" fill="url(#fireGradient)"/>
+  <!-- Small stars -->
+  <circle cx="45" cy="50" r="2" fill="#FFD700" opacity="0.9"/>
+  <circle cx="150" cy="45" r="1.5" fill="#FFF" opacity="0.8"/>
+  <circle cx="140" cy="140" r="2" fill="#FFD700" opacity="0.7"/>
+  <circle cx="60" cy="135" r="1.5" fill="#FFF" opacity="0.6"/>
+  <circle cx="170" cy="100" r="1.8" fill="#A78BFA" opacity="0.8"/>
   
-  <!-- Inner flame highlight -->
-  <path d="M 96 45 C 92 55, 85 70, 85 85 C 85 98, 90 108, 96 108 C 102 108, 107 98, 107 85 C 107 70, 100 55, 96 45 Z" fill="white" opacity="0.3"/>
+  <!-- Four-pointed stars -->
+  <g transform="translate(50, 40)">
+    <path d="M 0,-8 L -1.5,-1.5 L -8,0 L -1.5,1.5 L 0,8 L 1.5,1.5 L 8,0 L 1.5,-1.5 Z" fill="#FFD700" opacity="0.9"/>
+  </g>
+  <g transform="translate(145, 55)">
+    <path d="M 0,-6 L -1,-1 L -6,0 L -1,1 L 0,6 L 1,1 L 6,0 L 1,-1 Z" fill="#FFA500" opacity="0.85"/>
+  </g>
   
-  <!-- Spark 1 -->
-  <circle cx="75" cy="50" r="3" fill="#FFB366" opacity="0.8"/>
+  <!-- Orbit ring -->
+  <ellipse cx="96" cy="96" rx="70" ry="25" fill="none" stroke="url(#orbitGradient)" stroke-width="8" opacity="0.8" transform="rotate(-20 96 96)"/>
   
-  <!-- Spark 2 -->
-  <circle cx="117" cy="55" r="3" fill="#FFB366" opacity="0.8"/>
+  <!-- Small orbiting planet -->
+  <circle cx="40" cy="100" r="8" fill="#4ADE80" opacity="0.95">
+    <animate attributeName="cx" values="40;152;40" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="100;92;100" dur="8s" repeatCount="indefinite"/>
+  </circle>
   
-  <!-- Spark 3 -->
-  <circle cx="65" cy="75" r="2.5" fill="#FFB366" opacity="0.6"/>
+  <!-- Check mark - main shape with 3D effect -->
+  <g transform="translate(96, 85)">
+    <!-- Shadow layer -->
+    <path d="M -25,0 L -10,20 L 30,-30" fill="none" stroke="#001F5C" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.3" transform="translate(2, 2)"/>
+    
+    <!-- Main check -->
+    <path d="M -25,0 L -10,20 L 30,-30" fill="none" stroke="url(#checkGradient)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- Highlight -->
+    <path d="M -25,0 L -10,20 L 30,-30" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" transform="translate(-1, -1)"/>
+  </g>
   
-  <!-- Spark 4 -->
-  <circle cx="127" cy="78" r="2.5" fill="#FFB366" opacity="0.6"/>
+  <!-- Additional sparkle effects -->
+  <circle cx="75" cy="65" r="1.5" fill="#FFF" opacity="0.9">
+    <animate attributeName="opacity" values="0.9;0.3;0.9" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="165" cy="85" r="1.5" fill="#A78BFA" opacity="0.8">
+    <animate attributeName="opacity" values="0.8;0.3;0.8" dur="3s" repeatCount="indefinite"/>
+  </circle>
 </svg>

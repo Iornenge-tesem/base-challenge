@@ -3,8 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { mockLeaderboardData } from '@/lib/mockLeaderboard';
-import { mockChallenges } from '@/lib/mockChallenges';
 import { LeaderboardEntry } from '@/lib/types';
 import BackButton from '@/components/BackButton';
 
@@ -13,30 +11,24 @@ export default function ChallengeLeaderboardPage() {
   const challengeId = params.id as string;
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  
-  const challenge = mockChallenges.find(c => c.id === challengeId);
 
   useEffect(() => {
-    // Simulate loading
-    setTimeout(() => {
-      setLeaderboard(mockLeaderboardData[challengeId] || []);
-      setIsLoading(false);
-    }, 500);
-  }, [challengeId]);
+    const fetchLeaderboard = async () => {
+      try {
+        const response = await fetch(`/api/leaderboard?challenge_id=${challengeId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setLeaderboard(data);
+        }
+      } catch (error) {
+        console.error('Error fetching leaderboard:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
 
-  if (!challenge) {
-    return (
-      <div className="min-h-screen bg-primary-light-mode-blue dark:bg-primary-dark-blue flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-6xl mb-4">🤔</div>
-          <h2 className="text-2xl font-bold text-primary-dark-blue dark:text-primary-white mb-2">Challenge Not Found</h2>
-          <Link href="/challenges" className="text-accent-green dark:text-accent-green underline">
-            Back to Challenges
-          </Link>
-        </div>
-      </div>
-    );
-  }
+    fetchLeaderboard();
+  }, [challengeId]);
 
   return (
     <div className="min-h-screen bg-primary-light-mode-blue dark:bg-primary-dark-blue pb-24">
@@ -45,12 +37,12 @@ export default function ChallengeLeaderboardPage() {
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-2">
-            <span className="text-5xl">{challenge.thumbnail}</span>
+            <span className="text-5xl">🏆</span>
             <div>
               <h1 className="text-3xl font-bold text-primary-dark-blue dark:text-primary-white">
-                {challenge.title}
+                Challenge Leaderboard
               </h1>
-              <p className="text-primary-dark-blue dark:text-accent-light-gray">Leaderboard</p>
+              <p className="text-primary-dark-blue dark:text-accent-light-gray">Top participants</p>
             </div>
           </div>
         </div>
@@ -115,7 +107,7 @@ export default function ChallengeLeaderboardPage() {
                       {entry.score}
                     </div>
                     <div className="text-xs text-accent-gray dark:text-accent-light-gray">
-                      {challenge.type === 'daily-checkin' ? 'days' : 'points'}
+                      BCP
                     </div>
                   </div>
                 </div>

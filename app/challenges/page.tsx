@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import ChallengeCard from '@/components/ChallengeCard';
-import { mockChallenges } from '@/lib/mockChallenges';
 import { Challenge } from '@/lib/types';
 
 export default function ChallengesPage() {
@@ -11,51 +10,76 @@ export default function ChallengesPage() {
   const [participantCount, setParticipantCount] = useState(0);
 
   useEffect(() => {
-    // Load challenges
-    setTimeout(() => {
-      setChallenges(mockChallenges);
-    }, 500);
-
     let intervalId: ReturnType<typeof setInterval> | null = null;
+    let isMounted = true;
 
-    // Fetch real participant count for Show Up challenge
+    const fetchChallenges = async () => {
+      try {
+        const response = await fetch('/api/challenges');
+        if (response.ok) {
+          const data = await response.json();
+          if (isMounted) {
+            setChallenges(data.challenges || []);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching challenges:', error);
+      }
+    };
+
     const fetchParticipants = async () => {
       try {
         const response = await fetch('/api/participants?challenge_id=show-up');
         if (response.ok) {
           const data = await response.json();
-          setParticipantCount(data.participants);
+          if (isMounted) {
+            setParticipantCount(data.participants);
+          }
         }
       } catch (error) {
         console.error('Error fetching participant count:', error);
-        // Fallback to mock data
-        setParticipantCount(mockChallenges[0]?.participants || 0);
-      } finally {
+      }
+    };
+
+    const load = async () => {
+      await Promise.all([fetchChallenges(), fetchParticipants()]);
+      if (isMounted) {
         setIsLoading(false);
       }
     };
 
-    fetchParticipants();
+    load();
     intervalId = setInterval(fetchParticipants, 10000);
 
     return () => {
+      isMounted = false;
       if (intervalId) {
         clearInterval(intervalId);
       }
     };
   }, []);
 
-  // Get featured challenge (Show Up)
-  const featuredChallenge = challenges.find(c => c.id === 'show-up');
-  const otherChallenges = challenges.filter(c => c.id !== 'show-up');
+  const derivedChallenges = challenges.map((challenge) =>
+    challenge.id === 'show-up'
+      ? { ...challenge, participants: participantCount }
+      : challenge
+  );
+
+  const featuredChallenge = derivedChallenges.find(c => c.id === 'show-up');
+  const otherChallenges = derivedChallenges.filter(c => c.id !== 'show-up');
 
   return (
     <div className="min-h-screen bg-primary-light-mode-blue dark:bg-primary-dark-blue pb-24">
       {/* Hero Section */}
       <div className="bg-primary-modal-light dark:bg-primary-light-blue text-primary-white dark:text-primary-white py-6 px-4">
-        <div className="container mx-auto max-w-6xl text-center">
-          <h1 className="text-3xl font-bold mb-1">🚀 Base Challenge</h1>
-          <p className="text-sm opacity-90">Earn BCP by participating in challenges</p>
+        <div className="container mx-auto max-w-6xl">
+          <div className="flex items-center justify-center gap-3">
+            <img src="/icon.svg" alt="Base Challenge" className="w-12 h-12" />
+            <div className="text-center">
+              <h1 className="text-3xl font-bold mb-1">Base Challenge</h1>
+              <p className="text-sm opacity-90">Earn BCP by participating in challenges</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -92,30 +116,30 @@ export default function ChallengesPage() {
                 </p>
 
                 {/* Stats */}
-                <div className="grid grid-cols-4 gap-4 mb-6">
-                  <div className="bg-primary-light-mode-blue dark:bg-primary-dark-blue rounded-lg p-4 text-center min-w-0">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-6">
+                  <div className="bg-primary-light-mode-blue dark:bg-primary-dark-blue rounded-lg p-3 sm:p-4 text-center min-w-0">
                     <div className="font-bold text-primary-dark-blue dark:text-primary-white leading-tight break-words text-[clamp(0.85rem,2.4vw,1.5rem)]">
                       {participantCount.toLocaleString()}
                     </div>
-                    <div className="text-xs text-primary-dark-blue dark:text-accent-gray mt-1">Participants</div>
+                    <div className="text-[10px] sm:text-xs text-primary-dark-blue dark:text-accent-gray mt-1 leading-tight">Participants</div>
                   </div>
-                  <div className="bg-accent-green/10 dark:bg-accent-green/20 rounded-lg p-4 text-center min-w-0">
+                  <div className="bg-accent-green/10 dark:bg-accent-green/20 rounded-lg p-3 sm:p-4 text-center min-w-0">
                     <div className="font-bold text-accent-green leading-tight break-words text-[clamp(0.85rem,2.4vw,1.5rem)]">
                       {featuredChallenge.bcpReward}
                     </div>
-                    <div className="text-xs text-primary-dark-blue dark:text-accent-gray mt-1">BCP/Day</div>
+                    <div className="text-[10px] sm:text-xs text-primary-dark-blue dark:text-accent-gray mt-1 leading-tight">BCP/Day</div>
                   </div>
-                  <div className="bg-primary-light-mode-blue dark:bg-primary-dark-blue rounded-lg p-4 text-center min-w-0">
+                  <div className="bg-primary-light-mode-blue dark:bg-primary-dark-blue rounded-lg p-3 sm:p-4 text-center min-w-0">
                     <div className="font-bold text-primary-dark-blue dark:text-primary-white leading-tight break-words text-[clamp(0.85rem,2.4vw,1.5rem)]">
                       ∞
                     </div>
-                    <div className="text-xs text-primary-dark-blue dark:text-accent-gray mt-1">Duration</div>
+                    <div className="text-[10px] sm:text-xs text-primary-dark-blue dark:text-accent-gray mt-1 leading-tight">Duration</div>
                   </div>
-                  <div className="bg-primary-light-mode-blue dark:bg-primary-dark-blue rounded-lg p-4 text-center min-w-0">
+                  <div className="bg-primary-light-mode-blue dark:bg-primary-dark-blue rounded-lg p-3 sm:p-4 text-center min-w-0">
                     <div className="font-bold text-primary-dark-blue dark:text-primary-white leading-tight break-words text-[clamp(0.85rem,2.4vw,1.5rem)]">
                       {featuredChallenge.entryFee}
                     </div>
-                    <div className="text-xs text-primary-dark-blue dark:text-accent-gray mt-1">USDC</div>
+                    <div className="text-[10px] sm:text-xs text-primary-dark-blue dark:text-accent-gray mt-1 leading-tight">USDC</div>
                   </div>
                 </div>
 

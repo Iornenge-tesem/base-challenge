@@ -1,51 +1,45 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { useEffect, useRef, useState } from 'react'
 
 export function useWalletAddress() {
-  const [address, setAddress] = useState<string | null>(null)
-  const [isConnected, setIsConnected] = useState(false)
+  const { address, isConnected } = useAccount()
+  const { connect, connectors } = useConnect()
+  const { disconnect } = useDisconnect()
+  const [isMounted, setIsMounted] = useState(false)
+  const didAutoConnect = useRef(false)
 
   useEffect(() => {
-    // Check if wallet is available (MetaMask, etc.)
-    const checkWallet = async () => {
-      try {
-        // For now, we'll use localStorage to persist a test address
-        // In production, replace with actual wallet.connect() logic
-        const savedAddress = localStorage.getItem('walletAddress')
-        if (savedAddress) {
-          setAddress(savedAddress)
-          setIsConnected(true)
-        } else {
-          // Generate a test address for development
-          const testAddress = `0x${Math.random().toString(16).slice(2).padStart(40, '0')}`
-          localStorage.setItem('walletAddress', testAddress)
-          setAddress(testAddress)
-          setIsConnected(true)
-        }
-      } catch (error) {
-        console.error('Error checking wallet:', error)
-      }
-    }
-
-    checkWallet()
+    setIsMounted(true)
   }, [])
 
   const connectWallet = async () => {
-    // TODO: Implement actual wallet connection
-    // Example: window.ethereum?.request({ method: 'eth_requestAccounts' })
-    console.log('Wallet connection not yet implemented')
+    if (!isMounted) return
+    const injectedConnector = connectors.find(c => c.id === 'injected')
+    if (injectedConnector) {
+      connect({ connector: injectedConnector })
+      return
+    }
+    if (connectors[0]) {
+      connect({ connector: connectors[0] })
+    }
   }
 
+  useEffect(() => {
+    if (!isMounted || isConnected || didAutoConnect.current) return
+    if (!connectors.length) return
+    didAutoConnect.current = true
+    connectWallet()
+  }, [isMounted, isConnected, connectors, connectWallet])
+
   const disconnectWallet = () => {
-    localStorage.removeItem('walletAddress')
-    setAddress(null)
-    setIsConnected(false)
+    disconnect()
   }
 
   return {
-    address,
-    isConnected,
+    address: isMounted ? address : null,
+    isConnected: isMounted ? isConnected : false,
     connectWallet,
     disconnectWallet,
   }

@@ -1,17 +1,29 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Address, keccak256, toBytes } from 'viem';
 import ShowUpChallenge from '@/components/ShowUpChallenge';
 import BackButton from '@/components/BackButton';
+import { useWalletAddress } from '@/hooks/useWalletAddress';
+import { useChallengePayment } from '@/hooks/useChallengePayment';
 
 export default function ShowUpChallengePage() {
   const [hasJoined, setHasJoined] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [participantCount, setParticipantCount] = useState(0);
   const [isLoadingParticipants, setIsLoadingParticipants] = useState(true);
-  const entryFee = 0.3;
+  const [isCheckingBalance, setIsCheckingBalance] = useState(false);
+  const [isApproving, setIsApproving] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
+  const [balance, setBalance] = useState('0');
+  const [hasEnoughBalance, setHasEnoughBalance] = useState(false);
+  const [needsApproval, setNeedsApproval] = useState(false);
+  const { address, isConnected, connectWallet } = useWalletAddress();
+  const { checkBalance, getAllowance, approveUsdc, joinChallenge, checkParticipation, entryFeeUnits } =
+    useChallengePayment();
+  const challengeId = useMemo(() => keccak256(toBytes('show-up')), []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     let intervalId: ReturnType<typeof setInterval> | null = null;
 
     const fetchParticipants = async () => {
@@ -37,11 +49,63 @@ export default function ShowUpChallengePage() {
     };
   }, []);
 
-  const handleJoin = () => {
+  useEffect(() => {
+    if (!address) return;
+    const walletAddress = address as Address;
+
+    const loadState = async () => {
+      setIsCheckingBalance(true);
+      setError(null);
+      try {
+        const [balanceInfo, allowance, alreadyJoined] = await Promise.all([
+          checkBalance(walletAddress),
+          getAllowance(walletAddress),
+          checkParticipation(challengeId, walletAddress),
+        ]);
+
+        setBalance(balanceInfo.balanceFormatted || '0');
+        setHasEnoughBalance(balanceInfo.balanceSufficient);
+        setNeedsApproval(allowance < BigInt(entryFeeUnits));
+        setHasJoined(alreadyJoined);
+      } catch (err: any) {
+        setError(err.message || 'Failed to check balance');
+      } finally {
+        setIsCheckingBalance(false);
+      }
+    };
+
+    loadState();
+  }, [address, challengeId, checkBalance, checkParticipation, getAllowance]);
+
+  const handleJoin = async () => {
     setError(null);
-    // TODO: Connect wallet and check balance
-    // TODO: Trigger smart contract approval and transaction
-    setHasJoined(true);
+
+    if (!isConnected) {
+      connectWallet();
+      return;
+    }
+
+    if (!hasEnoughBalance) {
+      setError('Insufficient USDC balance');
+      return;
+    }
+
+    try {
+      if (needsApproval) {
+        setIsApproving(true);
+        await approveUsdc();
+        setNeedsApproval(false);
+      }
+
+      setIsJoining(true);
+      await joinChallenge(challengeId);
+      setHasJoined(true);
+    } catch (err: any) {
+      setError(err.message || 'Failed to join challenge');
+    } finally {
+      setIsApproving(false);
+      setIsJoining(false);
+    }
   };
   return (
     <div className="min-h-screen bg-primary-light-mode-blue dark:bg-primary-dark-blue pb-24">
@@ -92,22 +156,23 @@ export default function ShowUpChallengePage() {
             </div>
           )}
 
-          {!hasJoined && !error && (
+          {!hasJoined && (
             <button
               onClick={handleJoin}
-              className="mt-6 w-full bg-accent-green hover:bg-accent-green-dark text-primary-dark-blue py-3 rounded-lg font-bold hover:shadow-lg transition-all duration-300"
+              disabled={isCheckingBalance || isApproving || isJoining}
+              className="mt-6 w-full bg-accent-green hover:bg-accent-green-dark text-primary-dark-blue py-3 rounded-lg font-bold hover:shadow-lg transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Join Challenge (0.3 USDC) →
+              {isCheckingBalance && 'Checking balance...'}
+              {!isCheckingBalance && !isConnected && 'Connect Wallet →'}
+              {!isCheckingBalance && isConnected && needsApproval && (isApproving ? 'Approving USDC...' : 'Approve USDC (0.3) →')}
+              {!isCheckingBalance && isConnected && !needsApproval && (isJoining ? 'Joining...' : 'Join Challenge (0.3 USDC) →')}
             </button>
           )}
 
-          {!hasJoined && error && (
-            <button
-              disabled
-              className="mt-6 w-full bg-gray-400 text-gray-600 py-3 rounded-lg font-bold cursor-not-allowed"
-            >
-              Insufficient Balance
-            </button>
+          {!hasJoined && isConnected && !isCheckingBalance && (
+            <div className="mt-3 text-sm text-primary-dark-blue dark:text-accent-light-gray">
+              Balance: {balance} USDC
+            </div>
           )}
 
           {hasJoined && (

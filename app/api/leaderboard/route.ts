@@ -29,7 +29,6 @@ export async function GET(request: NextRequest) {
       score: entry.total_bcp,
       streak: entry.current_streak,
       avatar: '👤', // Default avatar
-      displayName: entry.wallet_address === '0x1234567890123456789012345678901234567890' ? 'You' : undefined,
     }))
 
     return NextResponse.json({ leaderboard })

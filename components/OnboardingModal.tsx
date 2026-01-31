@@ -24,9 +24,14 @@ export default function OnboardingModal({ onClose }: OnboardingModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-primary-light-blue rounded-2xl max-w-md w-full p-6 shadow-2xl border-2 border-primary-light-mode-blue dark:border-accent-green">
+      <div className="bg-white dark:bg-primary-light-blue rounded-2xl max-w-md w-full p-6 shadow-2xl border-2 border-primary-light-mode-blue dark:border-accent-green relative">
+        {/* App Icon */}
+        <div className="absolute top-4 left-4 w-10 h-10">
+          <img src="/icon.svg" alt="Base Challenge" className="w-full h-full" />
+        </div>
+        
         {step === 1 && (
-          <div className="text-center space-y-4">
+          <div className="text-center space-y-4 mt-6">
             <div className="text-6xl mb-4">🔥</div>
             <h2 className="text-2xl font-bold bg-gradient-to-r from-accent-green to-accent-green-dark bg-clip-text text-transparent">
               Welcome to Base Challenge
@@ -38,7 +43,7 @@ export default function OnboardingModal({ onClose }: OnboardingModalProps) {
         )}
 
         {step === 2 && (
-          <div className="text-center space-y-4">
+          <div className="text-center space-y-4 mt-6">
             <div className="text-6xl mb-4">⭐</div>
             <h2 className="text-2xl font-bold bg-gradient-to-r from-accent-green to-accent-green-dark bg-clip-text text-transparent">
               Earn Points Daily
@@ -50,7 +55,7 @@ export default function OnboardingModal({ onClose }: OnboardingModalProps) {
         )}
 
         {step === 3 && (
-          <div className="text-center space-y-4">
+          <div className="text-center space-y-4 mt-6">
             <div className="text-6xl mb-4">📸</div>
             <h2 className="text-2xl font-bold bg-gradient-to-r from-accent-green to-accent-green-dark bg-clip-text text-transparent">
               Share Your Success
