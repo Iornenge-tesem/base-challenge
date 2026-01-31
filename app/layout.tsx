@@ -45,57 +45,6 @@ export default function RootLayout({
       <Script id="theme-init" strategy="beforeInteractive">
         {`(function(){try{var t=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var e=t?t==='dark':d;document.documentElement.classList.toggle('dark',e);}catch(e){}})();`}
       </Script>
-      <Script id="farcaster-sdk-init" strategy="afterInteractive">
-        {`
-          console.log('🚀 Script loaded');
-          
-          function initSDK() {
-            console.log('Attempting SDK init...');
-            
-            // Method 1: Try window.farcaster
-            if (window.farcaster && window.farcaster.actions && window.farcaster.actions.ready) {
-              try {
-                window.farcaster.actions.ready();
-                console.log('✅ SDK ready via window.farcaster');
-                return true;
-              } catch (e) {
-                console.error('Error calling window.farcaster.actions.ready:', e);
-              }
-            }
-            
-            // Method 2: Try loading from npm package
-            try {
-              const sdk = window.__FARCASTER_SDK__;
-              if (sdk && sdk.actions && sdk.actions.ready) {
-                sdk.actions.ready();
-                console.log('✅ SDK ready via window.__FARCASTER_SDK__');
-                return true;
-              }
-            } catch (e) {
-              console.log('Method 2 failed:', e);
-            }
-            
-            console.log('⚠️ SDK not available yet');
-            return false;
-          }
-          
-          // Try immediately
-          if (!initSDK()) {
-            // Retry every 100ms for up to 3 seconds
-            let attempts = 0;
-            const interval = setInterval(function() {
-              attempts++;
-              console.log('Retry attempt', attempts);
-              if (initSDK() || attempts >= 30) {
-                clearInterval(interval);
-                if (attempts >= 30) {
-                  console.log('❌ SDK initialization failed after 30 attempts');
-                }
-              }
-            }, 100);
-          }
-        `}
-      </Script>
       <body
         className={`${inter.className} bg-primary-light-mode-blue dark:bg-primary-dark-blue text-primary-dark-blue dark:text-primary-white`}
       >
