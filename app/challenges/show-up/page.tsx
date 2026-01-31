@@ -98,7 +98,25 @@ export default function ShowUpChallengePage() {
       }
 
       setIsJoining(true);
-      await joinChallenge(challengeId);
+      const txHash = await joinChallenge(challengeId);
+      
+      // Verify transaction with backend
+      if (txHash) {
+        const verifyResponse = await fetch('/api/join-challenge', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            walletAddress: address,
+            challengeId,
+            transactionHash: txHash,
+          }),
+        });
+
+        if (!verifyResponse.ok) {
+          const errorData = await verifyResponse.json();
+          throw new Error(errorData.error || 'Transaction verification failed');
+        }
+      }
       setHasJoined(true);
     } catch (err: any) {
       setError(err.message || 'Failed to join challenge');
