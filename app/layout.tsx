@@ -45,6 +45,22 @@ export default function RootLayout({
       <Script id="theme-init" strategy="beforeInteractive">
         {`(function(){try{var t=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var e=t?t==='dark':d;document.documentElement.classList.toggle('dark',e);}catch(e){}})();`}
       </Script>
+      <Script id="farcaster-sdk-init" strategy="afterInteractive">
+        {`
+          (function() {
+            try {
+              if (window.farcaster && window.farcaster.actions && window.farcaster.actions.ready) {
+                window.farcaster.actions.ready();
+                console.log('✅ SDK ready via window.farcaster');
+              } else {
+                console.log('⚠️ window.farcaster not available');
+              }
+            } catch (e) {
+              console.error('SDK init error:', e);
+            }
+          })();
+        `}
+      </Script>
       <body
         className={`${inter.className} bg-primary-light-mode-blue dark:bg-primary-dark-blue text-primary-dark-blue dark:text-primary-white`}
       >
