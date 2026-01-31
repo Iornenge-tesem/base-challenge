@@ -14,6 +14,9 @@ export const metadata: Metadata = {
     icon: '/icon.svg',
     apple: '/icon.svg',
   },
+  other: {
+    'base:app_id': '6960e7348a6eeb04b568d95e',
+  },
 }
 
 export default function RootLayout({
