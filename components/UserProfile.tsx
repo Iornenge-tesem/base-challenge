@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 
 interface UserProfileProps {
-  address: string | null
+  address: string
   username?: string
   avatar?: string
   showThemeToggle?: boolean
