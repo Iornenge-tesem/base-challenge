@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     apple: '/icon.svg',
   },
   other: {
-    'base:app_id': '6960e7348a6eeb04b568d95e',
+    'base:app_id': '697d6a6fc6a03f3fe39cb530',
   },
 }
 
