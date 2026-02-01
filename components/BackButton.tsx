@@ -12,7 +12,7 @@ export default function BackButton({ label = 'Back' }: BackButtonProps) {
   return (
     <button
       onClick={() => router.back()}
-      className="inline-flex items-center gap-1 px-1 py-1 text-accent-green hover:opacity-80 transition-opacity font-medium"
+      className="inline-flex items-center gap-2 px-4 py-2 text-accent-green hover:opacity-80 transition-opacity font-medium mb-4"
     >
       <span>←</span>
       <span>{label}</span>
