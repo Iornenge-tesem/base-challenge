@@ -14,12 +14,13 @@ export async function POST(request: NextRequest) {
     const { data: participant, error: participantError } = await supabase
       .from('challenge_participants')
       .select('*')
-      .eq('wallet_address', wallet_address)
+      .ilike('wallet_address', wallet_address)
       .eq('challenge_id', challenge_id)
       .eq('status', 'active')
       .single()
 
     if (participantError || !participant) {
+      console.error('Participant check failed:', participantError, { wallet_address, challenge_id });
       return NextResponse.json(
         { error: 'You must join the challenge before checking in. Please complete the payment first.' },
         { status: 403 }
