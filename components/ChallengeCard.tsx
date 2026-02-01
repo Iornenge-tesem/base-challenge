@@ -17,26 +17,22 @@ export default function ChallengeCard({ challenge }: ChallengeCardProps) {
 
   useEffect(() => {
     if (!address || !isConnected || !isShowUpChallenge) {
-      console.log('ChallengeCard: Skipping check', { address, isConnected, isShowUpChallenge });
       setHasJoined(false);
       return;
     }
 
     const checkParticipation = async () => {
       setIsChecking(true);
-      console.log('ChallengeCard: Checking participation for', { address, challengeId: challenge.id });
       try {
         const response = await fetch(`/api/check-participation?challenge_id=${challenge.id}&wallet_address=${address}`);
         if (response.ok) {
           const data = await response.json();
-          console.log('ChallengeCard: Participation check result', data);
           setHasJoined(data.hasJoined || false);
         } else {
-          console.log('ChallengeCard: Participation check failed', response.status);
           setHasJoined(false);
         }
       } catch (error) {
-        console.error('ChallengeCard: Error checking participation:', error);
+        console.error('Error checking participation:', error);
         setHasJoined(false);
       } finally {
         setIsChecking(false);
@@ -115,17 +111,11 @@ export default function ChallengeCard({ challenge }: ChallengeCardProps) {
         )}
       </div>
 
-      {/* View Details / Status Button */}
+      {/* View Details Button */}
       {isShowUpChallenge ? (
-        hasJoined ? (
-          <div className="mt-4 w-full bg-green-100 dark:bg-green-900/30 border-2 border-green-400 dark:border-green-700 text-green-700 dark:text-green-400 py-2 rounded-lg font-bold text-center">
-            ✓ Challenge Joined
-          </div>
-        ) : (
-          <div className="mt-4 w-full bg-accent-green hover:bg-accent-green-dark text-primary-dark-blue py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 text-center">
-            {isChecking ? 'Checking...' : (address && isConnected ? 'View Details →' : 'View Details →')}
-          </div>
-        )
+        <div className="mt-4 w-full bg-accent-green hover:bg-accent-green-dark text-primary-dark-blue py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 text-center">
+          View Details →
+        </div>
       ) : (
         <button
           disabled
