@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
       const { error: insertError } = await supabase
         .from('challenge_participants')
         .insert({
-          wallet_address: walletAddress,
+          wallet_address: walletAddress.toLowerCase(),
           challenge_id: challengeId,
           joined_at: new Date().toISOString(),
           transaction_hash: transactionHash, // Store payment ID as transaction_hash
@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
     const { error: insertError } = await supabase
       .from('challenge_participants')
       .insert({
-        wallet_address: walletAddress,
+        wallet_address: walletAddress.toLowerCase(),
         challenge_id: challengeId,
         joined_at: new Date().toISOString(),
         transaction_hash: transactionHash,
