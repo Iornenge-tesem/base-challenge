@@ -6,19 +6,17 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const challenge_id = searchParams.get('challenge_id') || 'show-up'
 
-    // Get wallet addresses for the challenge and count unique participants
-    const { data, error } = await supabase
-      .from('checkins')
-      .select('wallet_address')
+    // Get count of participants who have joined the challenge
+    const { count, error } = await supabase
+      .from('challenge_participants')
+      .select('*', { count: 'exact', head: true })
       .eq('challenge_id', challenge_id)
 
     if (error) throw error
 
-    const uniqueWallets = new Set((data || []).map(row => row.wallet_address))
-
     return NextResponse.json({
       challenge_id,
-      participants: uniqueWallets.size,
+      participants: count || 0,
     })
   } catch (error: any) {
     console.error('Error getting participant count:', error)
