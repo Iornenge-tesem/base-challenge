@@ -18,14 +18,6 @@ export default function ChallengeCard({ challenge }: ChallengeCardProps) {
     }
   };
 
-  const handleJoin = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (isShowUpChallenge) {
-      console.log(`Joining challenge: ${challenge.id}`);
-    }
-  };
-
   const CardContent = () => (
     <div className="bg-white dark:bg-primary-light-blue rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-accent-green dark:hover:border-accent-green cursor-pointer flex flex-col h-full">
       {/* Thumbnail and Status */}
@@ -88,14 +80,11 @@ export default function ChallengeCard({ challenge }: ChallengeCardProps) {
         )}
       </div>
 
-      {/* Join Button */}
+      {/* View Details Button */}
       {isShowUpChallenge ? (
-        <button
-          onClick={handleJoin}
-          className="mt-4 w-full bg-accent-green hover:bg-accent-green-dark text-primary-dark-blue py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300"
-        >
-          Join Challenge →
-        </button>
+        <div className="mt-4 w-full bg-accent-green hover:bg-accent-green-dark text-primary-dark-blue py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 text-center">
+          View Details →
+        </div>
       ) : (
         <button
           disabled

@@ -10,6 +10,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Wallet address required' }, { status: 400 })
     }
 
+    // Verify user has joined the challenge by checking challenge_participants
+    const { data: participant, error: participantError } = await supabase
+      .from('challenge_participants')
+      .select('*')
+      .eq('wallet_address', wallet_address)
+      .eq('challenge_id', challenge_id)
+      .eq('status', 'active')
+      .single()
+
+    if (participantError || !participant) {
+      return NextResponse.json(
+        { error: 'You must join the challenge before checking in. Please complete the payment first.' },
+        { status: 403 }
+      )
+    }
+
     // Rate limiting: 10 requests per hour per wallet
     const rateLimitKey = `checkin:${wallet_address}`
     const isAllowed = rateLimit(rateLimitKey, {

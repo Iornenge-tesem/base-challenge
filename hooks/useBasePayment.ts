@@ -24,11 +24,11 @@ export function useBasePayment() {
 
       // Poll for payment status
       let attempts = 0
-      const maxAttempts = 20
+      const maxAttempts = 10
       let paymentStatus = 'pending'
 
       while (attempts < maxAttempts && paymentStatus === 'pending') {
-        await new Promise(resolve => setTimeout(resolve, 2000)) // Wait 2 seconds
+        await new Promise(resolve => setTimeout(resolve, 1500)) // Wait 1.5 seconds
 
         const { status } = await getPaymentStatus({
           id: payment.id,
@@ -39,6 +39,9 @@ export function useBasePayment() {
         attempts++
 
         if (status === 'completed') {
+          // Get referral code from localStorage
+          const referralCode = typeof window !== 'undefined' ? localStorage.getItem('referralCode') : null
+
           // Verify payment with backend
           const verifyResponse = await fetch('/api/join-challenge', {
             method: 'POST',
@@ -48,6 +51,7 @@ export function useBasePayment() {
               challengeId,
               transactionHash: payment.id,
               paymentMethod: 'base-account',
+              referralCode: referralCode || undefined,
             }),
           })
 

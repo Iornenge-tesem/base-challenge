@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import UserProfile from '@/components/UserProfile'
 import StreakDisplay from '@/components/StreakDisplay'
 import BackButton from '@/components/BackButton'
+import ShareButton from '@/components/ShareButton'
 import { useWalletAddress } from '@/hooks/useWalletAddress'
 import { useFarcasterUser } from '@/hooks/useFarcasterUser'
 import ConnectWallet from '@/components/ConnectWallet'
@@ -13,6 +14,7 @@ export default function ProfilePage() {
   const { user: farcasterUser } = useFarcasterUser()
   const [streak, setStreak] = useState(0)
   const [points, setPoints] = useState(0)
+  const [inviteCount, setInviteCount] = useState(0)
 
   useEffect(() => {
     const loadStats = async () => {
@@ -29,8 +31,22 @@ export default function ProfilePage() {
       }
     }
 
+    const loadInvites = async () => {
+      if (!farcasterUser?.username) return
+      try {
+        const response = await fetch(`/api/referrals?username=${encodeURIComponent(farcasterUser.username)}`)
+        if (response.ok) {
+          const data = await response.json()
+          setInviteCount(data.inviteCount || 0)
+        }
+      } catch (error) {
+        console.error('Error loading invite count:', error)
+      }
+    }
+
     loadStats()
-  }, [address])
+    loadInvites()
+  }, [address, farcasterUser?.username])
 
   if (!address) {
     return (
@@ -82,6 +98,28 @@ export default function ProfilePage() {
           points={points}
           address={address}
         />
+
+        {/* Invite Stats */}
+        <div className="bg-white dark:bg-primary-light-blue rounded-2xl p-6 shadow-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-primary-dark-blue dark:text-primary-white">
+              Referrals
+            </h3>
+            <div className="bg-accent-green/10 dark:bg-accent-green/20 px-3 py-1 rounded-full">
+              <span className="text-accent-green dark:text-accent-green font-bold">
+                {inviteCount} invited
+              </span>
+            </div>
+          </div>
+          <p className="text-sm text-primary-dark-blue dark:text-accent-light-gray mb-4">
+            Share your referral link and earn rewards when friends join!
+          </p>
+          <ShareButton 
+            referralCode={farcasterUser?.username}
+            text={`I'm on a ${streak}-day streak on Base Challenge! 🔥 Join me and start building your streak too!`}
+            className="w-full justify-center"
+          />
+        </div>
       </div>
     </main>
   )

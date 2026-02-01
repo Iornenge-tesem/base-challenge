@@ -53,10 +53,27 @@ CREATE TABLE user_stats (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
+-- Challenge participants table
+CREATE TABLE challenge_participants (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  wallet_address TEXT NOT NULL,
+  challenge_id TEXT NOT NULL,
+  joined_at TIMESTAMP DEFAULT NOW(),
+  transaction_hash TEXT,
+  status TEXT DEFAULT 'active',
+  referral_code TEXT,
+  created_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE(wallet_address, challenge_id)
+);
+
+-- Create index for referral code queries
+CREATE INDEX idx_challenge_participants_referral_code ON challenge_participants(referral_code);
+
 -- Enable Row Level Security
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE checkins ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_stats ENABLE ROW LEVEL SECURITY;
+ALTER TABLE challenge_participants ENABLE ROW LEVEL SECURITY;
 
 -- Policies (users can read all, modify own data)
 CREATE POLICY "Public read access" ON users FOR SELECT USING (true);
@@ -67,6 +84,9 @@ CREATE POLICY "Users can insert own checkins" ON checkins FOR INSERT WITH CHECK 
 
 CREATE POLICY "Public read access" ON user_stats FOR SELECT USING (true);
 CREATE POLICY "Users can update own stats" ON user_stats FOR UPDATE USING (wallet_address = current_setting('request.jwt.claim.wallet_address', true));
+
+CREATE POLICY "Public read access" ON challenge_participants FOR SELECT USING (true);
+CREATE POLICY "Public insert access" ON challenge_participants FOR INSERT WITH CHECK (true);
 ```
 
 ## 5. Install Packages (run in terminal)

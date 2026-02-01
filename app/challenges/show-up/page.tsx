@@ -12,7 +12,7 @@ export default function ShowUpChallengePage() {
   const [hasJoined, setHasJoined] = useState(false);
   const [participantCount, setParticipantCount] = useState(0);
   const [isLoadingParticipants, setIsLoadingParticipants] = useState(true);
-  const [isCheckingJoined, setIsCheckingJoined] = useState(false);
+  const [isCheckingJoined, setIsCheckingJoined] = useState(true);
   const { address, isConnected, connectWallet } = useWalletAddress();
   const { processPayment, checkParticipation, isProcessing, error, entryFee } = useBasePayment();
   const challengeId = 'show-up';
@@ -44,7 +44,11 @@ export default function ShowUpChallengePage() {
   }, []);
 
   useEffect(() => {
-    if (!address) return;
+    if (!address) {
+      setIsCheckingJoined(false);
+      setHasJoined(false);
+      return;
+    }
 
     const checkIfJoined = async () => {
       setIsCheckingJoined(true);
@@ -149,8 +153,21 @@ export default function ShowUpChallengePage() {
           )}
         </div>
 
-        {/* Challenge Interface */}
-        <ShowUpChallenge />
+        {/* Challenge Interface - Only show if user has joined */}
+        {hasJoined && <ShowUpChallenge />}
+        
+        {/* Message for non-participants */}
+        {!hasJoined && isConnected && !isCheckingJoined && (
+          <div className="bg-white dark:bg-primary-light-blue rounded-2xl p-8 shadow-lg text-center">
+            <div className="text-5xl mb-4">🔒</div>
+            <h3 className="text-xl font-semibold text-primary-dark-blue dark:text-primary-white mb-2">
+              Join to Start Checking In
+            </h3>
+            <p className="text-primary-dark-blue dark:text-accent-light-gray">
+              Complete the payment above to unlock daily check-ins and start building your streak!
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
