@@ -1,29 +1,21 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
-import { Address, keccak256, toBytes } from 'viem';
+import React, { useEffect, useState } from 'react';
 import ShowUpChallenge from '@/components/ShowUpChallenge';
 import BackButton from '@/components/BackButton';
 import { useWalletAddress } from '@/hooks/useWalletAddress';
-import { useChallengePayment } from '@/hooks/useChallengePayment';
+import { useBasePayment } from '@/hooks/useBasePayment';
 
 export const dynamic = 'force-dynamic';
 
 export default function ShowUpChallengePage() {
   const [hasJoined, setHasJoined] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [participantCount, setParticipantCount] = useState(0);
   const [isLoadingParticipants, setIsLoadingParticipants] = useState(true);
-  const [isCheckingBalance, setIsCheckingBalance] = useState(false);
-  const [isApproving, setIsApproving] = useState(false);
-  const [isJoining, setIsJoining] = useState(false);
-  const [balance, setBalance] = useState('0');
-  const [hasEnoughBalance, setHasEnoughBalance] = useState(false);
-  const [needsApproval, setNeedsApproval] = useState(false);
+  const [isCheckingJoined, setIsCheckingJoined] = useState(false);
   const { address, isConnected, connectWallet } = useWalletAddress();
-  const { checkBalance, getAllowance, approveUsdc, joinChallenge, checkParticipation, entryFeeUnits } =
-    useChallengePayment();
-  const challengeId = useMemo(() => keccak256(toBytes('show-up')), []);
+  const { processPayment, checkParticipation, isProcessing, error, entryFee } = useBasePayment();
+  const challengeId = 'show-up';
 
   useEffect(() => {
     let intervalId: ReturnType<typeof setInterval> | null = null;
@@ -53,78 +45,35 @@ export default function ShowUpChallengePage() {
 
   useEffect(() => {
     if (!address) return;
-    const walletAddress = address as Address;
 
-    const loadState = async () => {
-      setIsCheckingBalance(true);
-      setError(null);
+    const checkIfJoined = async () => {
+      setIsCheckingJoined(true);
       try {
-        const [balanceInfo, allowance, alreadyJoined] = await Promise.all([
-          checkBalance(walletAddress),
-          getAllowance(walletAddress),
-          checkParticipation(challengeId, walletAddress),
-        ]);
-
-        setBalance(balanceInfo.balanceFormatted || '0');
-        setHasEnoughBalance(balanceInfo.balanceSufficient);
-        setNeedsApproval(allowance < BigInt(entryFeeUnits));
-        setHasJoined(alreadyJoined);
-      } catch (err: any) {
-        setError(err.message || 'Failed to check balance');
+        const joined = await checkParticipation(challengeId, address);
+        setHasJoined(joined);
+      } catch (err) {
+        console.error('Error checking participation:', err);
       } finally {
-        setIsCheckingBalance(false);
+        setIsCheckingJoined(false);
       }
     };
 
-    loadState();
-  }, [address, challengeId, checkBalance, checkParticipation, getAllowance]);
+    checkIfJoined();
+  }, [address, challengeId, checkParticipation]);
 
   const handleJoin = async () => {
-    setError(null);
-
-    if (!isConnected) {
+    if (!isConnected || !address) {
       connectWallet();
       return;
     }
 
-    if (!hasEnoughBalance) {
-      setError('Insufficient USDC balance');
-      return;
-    }
-
     try {
-      if (needsApproval) {
-        setIsApproving(true);
-        await approveUsdc();
-        setNeedsApproval(false);
+      const result = await processPayment(challengeId, address);
+      if (result.success) {
+        setHasJoined(true);
       }
-
-      setIsJoining(true);
-      const txHash = await joinChallenge(challengeId);
-      
-      // Verify transaction with backend
-      if (txHash) {
-        const verifyResponse = await fetch('/api/join-challenge', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            walletAddress: address,
-            challengeId,
-            transactionHash: txHash,
-          }),
-        });
-
-        if (!verifyResponse.ok) {
-          const errorData = await verifyResponse.json();
-          throw new Error(errorData.error || 'Transaction verification failed');
-        }
-      }
-      setHasJoined(true);
     } catch (err: any) {
-      setError(err.message || 'Failed to join challenge');
-    } finally {
-      setIsApproving(false);
-      setIsJoining(false);
+      console.error('Payment error:', err);
     }
   };
   return (
@@ -184,20 +133,13 @@ export default function ShowUpChallengePage() {
           {!hasJoined && (
             <button
               onClick={handleJoin}
-              disabled={isCheckingBalance || isApproving || isJoining}
+              disabled={isCheckingJoined || isProcessing}
               className="mt-6 w-full bg-accent-green hover:bg-accent-green-dark text-primary-dark-blue py-3 rounded-lg font-bold hover:shadow-lg transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {isCheckingBalance && 'Checking balance...'}
-              {!isCheckingBalance && !isConnected && 'Connect Wallet →'}
-              {!isCheckingBalance && isConnected && needsApproval && (isApproving ? 'Approving USDC...' : 'Approve USDC (0.3) →')}
-              {!isCheckingBalance && isConnected && !needsApproval && (isJoining ? 'Joining...' : 'Join Challenge (0.3 USDC) →')}
+              {isCheckingJoined && 'Loading...'}
+              {!isCheckingJoined && !isConnected && 'Connect Wallet →'}
+              {!isCheckingJoined && isConnected && (isProcessing ? 'Processing Payment...' : `Join Challenge (${entryFee} USDC) →`)}
             </button>
-          )}
-
-          {!hasJoined && isConnected && !isCheckingBalance && (
-            <div className="mt-3 text-sm text-primary-dark-blue dark:text-accent-light-gray">
-              Balance: {balance} USDC
-            </div>
           )}
 
           {hasJoined && (

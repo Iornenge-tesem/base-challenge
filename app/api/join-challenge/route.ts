@@ -16,7 +16,7 @@ const ENTRY_FEE_UNITS = 300000n // 0.3 USDC with 6 decimals
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { walletAddress, challengeId, transactionHash } = body
+    const { walletAddress, challengeId, transactionHash, paymentMethod } = body
 
     // Validate inputs
     if (!walletAddress || !isAddress(walletAddress)) {
@@ -40,6 +40,42 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // For Base Account payments, skip blockchain verification
+    if (paymentMethod === 'base-account') {
+      // Insert into challenge_participants table
+      const { error: insertError } = await supabase
+        .from('challenge_participants')
+        .insert({
+          wallet_address: walletAddress,
+          challenge_id: challengeId,
+          joined_at: new Date().toISOString(),
+          transaction_hash: transactionHash, // Store payment ID as transaction_hash
+          status: 'active',
+        })
+
+      if (insertError) {
+        // If it's a unique constraint error (already joined), that's ok
+        if (insertError.code === '23505') {
+          return NextResponse.json(
+            { success: true, message: 'Already joined this challenge' },
+            { status: 200 }
+          )
+        }
+        console.error('Insert error:', insertError)
+        throw insertError
+      }
+
+      return NextResponse.json(
+        { 
+          success: true, 
+          message: 'Successfully joined challenge',
+          paymentId: transactionHash,
+        },
+        { status: 201 }
+      )
+    }
+
+    // For direct blockchain transactions, verify the transaction on-chain
     // Fetch transaction from Base blockchain
     let transaction
     try {
