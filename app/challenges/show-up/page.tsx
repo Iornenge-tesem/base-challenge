@@ -12,6 +12,7 @@ export default function ShowUpChallengePage() {
   const [hasJoined, setHasJoined] = useState(false);
   const [participantCount, setParticipantCount] = useState(0);
   const [isLoadingParticipants, setIsLoadingParticipants] = useState(true);
+  const [isCheckingJoined, setIsCheckingJoined] = useState(false);
   const { address, isConnected, connectWallet } = useWalletAddress();
   const { processPayment, isProcessing, error, entryFee } = useBasePayment();
   const challengeId = 'show-up';
@@ -41,6 +42,31 @@ export default function ShowUpChallengePage() {
       }
     };
   }, []);
+
+  // Check if user has already joined (non-blocking)
+  useEffect(() => {
+    if (!address) {
+      setHasJoined(false);
+      return;
+    }
+
+    const checkJoined = async () => {
+      setIsCheckingJoined(true);
+      try {
+        const response = await fetch(`/api/check-participation?challenge_id=${challengeId}&wallet_address=${address}`);
+        if (response.ok) {
+          const data = await response.json();
+          setHasJoined(data.hasJoined || false);
+        }
+      } catch (error) {
+        console.error('Error checking participation:', error);
+      } finally {
+        setIsCheckingJoined(false);
+      }
+    };
+
+    checkJoined();
+  }, [address, challengeId]);
 
   const handleJoin = async () => {
     if (!isConnected || !address) {
@@ -116,11 +142,10 @@ export default function ShowUpChallengePage() {
           {!hasJoined && (
             <button
               onClick={handleJoin}
-              disabled={isProcessing}
+              disabled={isProcessing || isCheckingJoined}
               className="mt-6 w-full bg-accent-green hover:bg-accent-green-dark text-primary-dark-blue py-3 rounded-lg font-bold hover:shadow-lg transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {!isConnected && 'Connect Wallet →'}
-              {isConnected && (isProcessing ? 'Processing Payment...' : `Join Challenge (${entryFee} USDC) →`)}
+              {isCheckingJoined ? 'Checking...' : (!isConnected ? 'Connect Wallet →' : (isProcessing ? 'Processing Payment...' : `Join Challenge (${entryFee} USDC) →`))}
             </button>
           )}
 
