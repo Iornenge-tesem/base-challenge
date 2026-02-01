@@ -22,6 +22,11 @@ export default function BottomNav() {
       icon: '👤',
       href: '/profile',
     },
+    {
+      label: 'Admin',
+      icon: '⚙️',
+      href: '/admin/backfill',
+    },
   ]
 
   return (
