@@ -16,7 +16,7 @@ export default function FarcasterUserHeader() {
         <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
           <Image
             src={user.pfpUrl}
-            alt={user.username}
+            alt={user.username || 'User'}
             fill
             className="object-cover"
           />
@@ -27,7 +27,7 @@ export default function FarcasterUserHeader() {
           {user.displayName || user.username}
         </p>
         <p className="text-xs text-primary-white/70 truncate">
-          @{user.username}
+          @{user.username || 'user'}
         </p>
       </div>
     </div>
