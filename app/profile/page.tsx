@@ -5,13 +5,14 @@ import UserProfile from '@/components/UserProfile'
 import StreakDisplay from '@/components/StreakDisplay'
 import BackButton from '@/components/BackButton'
 import { useWalletAddress } from '@/hooks/useWalletAddress'
+import { useFarcasterUser } from '@/hooks/useFarcasterUser'
 import ConnectWallet from '@/components/ConnectWallet'
 
 export default function ProfilePage() {
   const { address, disconnectWallet } = useWalletAddress()
+  const { user: farcasterUser } = useFarcasterUser()
   const [streak, setStreak] = useState(0)
   const [points, setPoints] = useState(0)
-  const [username, setUsername] = useState<string | null>(null)
 
   useEffect(() => {
     const loadStats = async () => {
@@ -72,8 +73,8 @@ export default function ProfilePage() {
 
         <UserProfile
           address={address}
-          username={username || ''}
-          avatar={''}
+          username={farcasterUser?.username || ''}
+          avatar={farcasterUser?.pfpUrl}
           showThemeToggle
         />
 

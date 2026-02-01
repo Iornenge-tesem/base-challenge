@@ -3,8 +3,10 @@
 import { ReactNode, useEffect } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiProvider } from 'wagmi'
+import { OnchainKitProvider } from '@coinbase/onchainkit'
 import { config } from '@/lib/wagmi'
 import SDKInitializer from '@/components/SDKInitializer'
+import { base } from 'wagmi/chains'
 
 const queryClient = new QueryClient()
 
@@ -69,9 +71,11 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <SDKInitializer>
       <WagmiProvider config={config}>
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
+        <OnchainKitProvider chain={base}>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        </OnchainKitProvider>
       </WagmiProvider>
     </SDKInitializer>
   )

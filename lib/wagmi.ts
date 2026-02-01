@@ -1,15 +1,16 @@
 import { createConfig, http } from 'wagmi'
 import { base } from 'wagmi/chains'
-import { injected, metaMask, coinbaseWallet } from 'wagmi/connectors'
+import { farcasterMiniApp } from '@farcaster/miniapp-wagmi-connector'
+import { baseAccount } from 'wagmi/connectors'
 
 export const config = createConfig({
   chains: [base],
+  transports: { [base.id]: http() },
   connectors: [
-    injected(),
-    metaMask(),
-    coinbaseWallet({ appName: 'Base Challenge' }),
+    farcasterMiniApp(),
+    baseAccount({
+      appName: 'Base Challenge',
+      appLogoUrl: 'https://base-challenge-iota.vercel.app/icon.png',
+    })
   ],
-  transports: {
-    [base.id]: http('https://mainnet.base.org'),
-  },
 })

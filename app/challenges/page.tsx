@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import ChallengeCard from '@/components/ChallengeCard';
+import FarcasterUserHeader from '@/components/FarcasterUserHeader';
 import { Challenge } from '@/lib/types';
 
 export default function ChallengesPage() {
@@ -73,7 +74,8 @@ export default function ChallengesPage() {
       {/* Hero Section */}
       <div className="bg-primary-modal-light dark:bg-primary-light-blue text-primary-white dark:text-primary-white py-6 px-4">
         <div className="container mx-auto max-w-6xl">
-          <div className="flex items-center justify-center gap-3">
+          <FarcasterUserHeader />
+          <div className="flex items-center justify-center gap-3 mt-4">
             <img src="/icon.svg" alt="Base Challenge" className="w-12 h-12" />
             <div className="text-center">
               <h1 className="text-3xl font-bold mb-1">Base Challenge</h1>
