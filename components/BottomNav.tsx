@@ -22,16 +22,6 @@ export default function BottomNav() {
       icon: '👤',
       href: '/profile',
     },
-    {
-      label: 'Admin',
-      icon: '⚙️',
-      href: '/admin/backfill',
-    },
-  ]
-
-  return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-primary-modal-light dark:bg-primary-light-blue border-t-2 border-primary-modal-light dark:border-primary-light-blue safe-area-bottom z-40 shadow-lg">
-      <div className="max-w-4xl mx-auto px-4">
         <div className="flex justify-around items-center h-16">
           {navItems.map((item) => {
             const isActive = pathname === item.href
@@ -45,7 +35,7 @@ export default function BottomNav() {
                     : 'text-accent-gray hover:text-primary-white dark:hover:text-primary-white'
                 }`}
               >
-                <span className="text-2xl">{item.icon}</span>
+                <span className="text-lg">{item.icon}</span>
                 <span className="text-xs font-medium">{item.label}</span>
               </Link>
             )
