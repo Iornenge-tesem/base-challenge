@@ -17,29 +17,28 @@ export async function GET() {
       payload: 'eyJkb21haW4iOiJiYXNlLWNoYWxsZW5nZS1pb3RhLnZlcmNlbC5hcHAifQ',
       signature: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEFnttapLBiaFCy3T-rausyVsDoGENy4eDFPnvdu3yzSTU27lyOEM9QsbCScxtq7QZkCQ_-tIfwcO7Wfumd2d07AGwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
     },
-    miniapp: withValidProperties({
+    miniapp: {
       version: '1',
       name: 'Base Challenge',
       homeUrl: baseUrl,
       iconUrl: `${baseUrl}/icon.png`,
       splashImageUrl: `${baseUrl}/icon.png`,
       splashBackgroundColor: '#0a2540',
-      webhookUrl: `${baseUrl}/api/webhook`,
-      subtitle: 'Show up daily on Base',
-      description: 'Join the daily show up challenge on Base and earn BCP by checking in.',
+      subtitle: 'Show Up Daily & Earn',
+      description: 'Join the daily show up challenge on Base. Check in every day, build your streak, and earn BCP tokens.',
       screenshotUrls: [
         `${baseUrl}/screenshots/leaderboard-1.jpeg`,
         `${baseUrl}/screenshots/leaderboard-2.jpeg`,
-        `${baseUrl}/screenshots/leaderboard-3.jpeg`,
+        `${baseUrl}/screenshots/leaderboard-3.jpeg`
       ],
       primaryCategory: 'social',
-      tags: ['base', 'challenge', 'checkin', 'leaderboard'],
+      tags: ['social', 'challenge', 'rewards'],
       heroImageUrl: `${baseUrl}/icon.png`,
-      tagline: 'Show up. Earn BCP.',
-      ogTitle: 'Base Challenge',
-      ogDescription: 'Show up daily on Base. Track streaks, climb the leaderboard, and earn BCP.',
+      tagline: 'Build your daily streak',
+      ogTitle: 'Base Challenge - Show Up Daily',
+      ogDescription: 'Join the daily show up challenge on Base and earn BCP tokens',
       ogImageUrl: `${baseUrl}/icon.png`,
-      noindex: false,
-    }),
+      noindex: false
+    },
   })
 }
