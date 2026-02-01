@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Challenge } from '@/lib/types';
+import { useWalletAddress } from '@/hooks/useWalletAddress';
 
 interface ChallengeCardProps {
   challenge: Challenge;
@@ -10,6 +11,33 @@ interface ChallengeCardProps {
 
 export default function ChallengeCard({ challenge }: ChallengeCardProps) {
   const isShowUpChallenge = challenge.id === 'show-up';
+  const { address } = useWalletAddress();
+  const [hasJoined, setHasJoined] = useState(false);
+  const [isChecking, setIsChecking] = useState(false);
+
+  useEffect(() => {
+    if (!address || !isShowUpChallenge) {
+      setHasJoined(false);
+      return;
+    }
+
+    const checkParticipation = async () => {
+      setIsChecking(true);
+      try {
+        const response = await fetch(`/api/check-participation?challenge_id=${challenge.id}&wallet_address=${address}`);
+        if (response.ok) {
+          const data = await response.json();
+          setHasJoined(data.hasJoined || false);
+        }
+      } catch (error) {
+        console.error('Error checking participation:', error);
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    checkParticipation();
+  }, [address, challenge.id, isShowUpChallenge]);
 
   const handleClick = (e: React.MouseEvent) => {
     if (!isShowUpChallenge) {
@@ -80,11 +108,17 @@ export default function ChallengeCard({ challenge }: ChallengeCardProps) {
         )}
       </div>
 
-      {/* View Details Button */}
+      {/* View Details / Status Button */}
       {isShowUpChallenge ? (
-        <div className="mt-4 w-full bg-accent-green hover:bg-accent-green-dark text-primary-dark-blue py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 text-center">
-          View Details →
-        </div>
+        hasJoined ? (
+          <div className="mt-4 w-full bg-green-100 dark:bg-green-900/30 border-2 border-green-400 dark:border-green-700 text-green-700 dark:text-green-400 py-2 rounded-lg font-bold text-center">
+            ✓ Challenge Joined
+          </div>
+        ) : (
+          <div className="mt-4 w-full bg-accent-green hover:bg-accent-green-dark text-primary-dark-blue py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 text-center">
+            {isChecking ? 'Checking...' : 'View Details →'}
+          </div>
+        )
       ) : (
         <button
           disabled
