@@ -26,7 +26,7 @@ export default function LeaderBoard() {
         // Transform API response to match component structure
         const formattedLeaders = data.leaderboard.map((entry: any) => ({
           address: entry.address,
-          username: entry.displayName || entry.username || `${entry.address.slice(0, 6)}...${entry.address.slice(-4)}`,
+          username: entry.displayName,
           avatar: entry.avatar,
           streak: entry.streak || 0,
           points: entry.score || 0,
@@ -78,38 +78,21 @@ export default function LeaderBoard() {
                 {index + 1}
               </div>
               
-              {leader.avatar ? (
-                <img 
-                  src={leader.avatar} 
-                  alt={leader.username || 'User'} 
-                  className="w-10 h-10 rounded-full object-cover border-2 border-accent-green"
-                  onError={(e) => {
-                    // Fallback to initials if image fails to load
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    const fallback = target.nextElementSibling as HTMLElement;
-                    if (fallback) fallback.style.display = 'flex';
-                  }}
-                />
-              ) : null}
-              <div 
-                className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-green to-accent-green-dark flex items-center justify-center text-primary-dark-blue font-bold"
-                style={{ display: leader.avatar ? 'none' : 'flex' }}
-              >
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-green to-accent-green-dark flex items-center justify-center text-primary-dark-blue font-bold">
                 {leader.username?.[0]?.toUpperCase() || leader.address.slice(2, 4).toUpperCase()}
               </div>
               
               <div className="flex-1">
                 <div className="font-medium text-primary-dark-blue dark:text-primary-white">
-                  {leader.username}
+                  {leader.username || `${leader.address.slice(0, 6)}...${leader.address.slice(-4)}`}
                 </div>
                 <div className="text-sm text-primary-dark-blue dark:text-accent-light-gray">
-                  🔥 {leader.streak} day streak
+                  {leader.streak} day streak
                 </div>
               </div>
               
               <div className="text-right">
-                <div className="font-bold text-lg bg-gradient-to-r from-accent-green to-accent-green-dark bg-clip-text text-transparent">
+                <div className="font-bold bg-gradient-to-r from-accent-green to-accent-green-dark bg-clip-text text-transparent">
                   {leader.points}
                 </div>
                 <div className="text-xs text-primary-dark-blue dark:text-accent-light-gray">BCP</div>

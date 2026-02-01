@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     const challenge_id = searchParams.get('challenge_id') || 'show-up'
     const limit = parseInt(searchParams.get('limit') || '50')
 
-    // Get top users by BCP with their Farcaster data
+    // Get top users by BCP
     const { data, error } = await supabase
       .from('user_stats')
       .select(`
@@ -15,10 +15,7 @@ export async function GET(request: NextRequest) {
         total_bcp,
         current_streak,
         longest_streak,
-        total_checkins,
-        farcaster_username,
-        farcaster_display_name,
-        farcaster_pfp_url
+        total_checkins
       `)
       .order('total_bcp', { ascending: false })
       .limit(limit)
@@ -31,9 +28,7 @@ export async function GET(request: NextRequest) {
       address: entry.wallet_address,
       score: entry.total_bcp,
       streak: entry.current_streak,
-      avatar: entry.farcaster_pfp_url || null,
-      username: entry.farcaster_username || null,
-      displayName: entry.farcaster_display_name || null,
+      avatar: '👤', // Default avatar
     }))
 
     return NextResponse.json({ leaderboard })

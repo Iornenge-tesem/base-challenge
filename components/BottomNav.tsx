@@ -40,7 +40,7 @@ export default function BottomNav() {
                     : 'text-accent-gray hover:text-primary-white dark:hover:text-primary-white'
                 }`}
               >
-                <span className="text-lg">{item.icon}</span>
+                <span className="text-2xl">{item.icon}</span>
                 <span className="text-xs font-medium">{item.label}</span>
               </Link>
             )

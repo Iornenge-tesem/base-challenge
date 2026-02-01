@@ -50,9 +50,6 @@ CREATE TABLE user_stats (
   longest_streak INTEGER DEFAULT 0,
   total_checkins INTEGER DEFAULT 0,
   last_checkin_date DATE,
-  farcaster_username TEXT,
-  farcaster_display_name TEXT,
-  farcaster_pfp_url TEXT,
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -90,14 +87,6 @@ CREATE POLICY "Users can update own stats" ON user_stats FOR UPDATE USING (walle
 
 CREATE POLICY "Public read access" ON challenge_participants FOR SELECT USING (true);
 CREATE POLICY "Public insert access" ON challenge_participants FOR INSERT WITH CHECK (true);
-```
-
-## 6. Add Farcaster Columns to Existing user_stats Table (if already created)
-If your `user_stats` table already exists, run this SQL to add the Farcaster columns:
-```sql
-ALTER TABLE user_stats ADD COLUMN IF NOT EXISTS farcaster_username TEXT;
-ALTER TABLE user_stats ADD COLUMN IF NOT EXISTS farcaster_display_name TEXT;
-ALTER TABLE user_stats ADD COLUMN IF NOT EXISTS farcaster_pfp_url TEXT;
 ```
 
 ## 5. Install Packages (run in terminal)

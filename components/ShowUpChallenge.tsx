@@ -9,7 +9,6 @@ import StreakDisplaySkeleton from './skeletons/StreakDisplaySkeleton'
 import CheckInButtonSkeleton from './skeletons/CheckInButtonSkeleton'
 import LeaderBoardSkeleton from './skeletons/LeaderBoardSkeleton'
 import { useWalletAddress } from '@/hooks/useWalletAddress'
-import { useFarcasterUser } from '@/hooks/useFarcasterUser'
 
 export default function ShowUpChallenge() {
   // BCP schedule config (can be updated later from backend)
@@ -29,7 +28,6 @@ export default function ShowUpChallenge() {
 
   // Get wallet address
   const { address } = useWalletAddress()
-  const { user: farcasterUser } = useFarcasterUser()
 
   useEffect(() => {
     if (address) {
@@ -84,9 +82,6 @@ export default function ShowUpChallenge() {
         body: JSON.stringify({
           wallet_address: currentAddress,
           challenge_id: 'show-up',
-          farcaster_username: farcasterUser?.username,
-          farcaster_display_name: farcasterUser?.displayName,
-          farcaster_pfp_url: farcasterUser?.pfpUrl,
         }),
       })
 

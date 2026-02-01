@@ -42,12 +42,6 @@ export async function POST(request: NextRequest) {
 
     // For Base Account payments, skip blockchain verification
     if (paymentMethod === 'base-account') {
-      console.log('Processing Base Account payment:', {
-        walletAddress: walletAddress.toLowerCase(),
-        challengeId,
-        paymentId: transactionHash,
-      })
-
       // Insert into challenge_participants table
       const { error: insertError } = await supabase
         .from('challenge_participants')
@@ -61,7 +55,6 @@ export async function POST(request: NextRequest) {
         })
 
       if (insertError) {
-        console.log('Insert error:', insertError.code, insertError.message)
         // If it's a unique constraint error (already joined), that's ok
         if (insertError.code === '23505') {
           return NextResponse.json(
@@ -73,7 +66,6 @@ export async function POST(request: NextRequest) {
         throw insertError
       }
 
-      console.log('✅ Successfully inserted participant')
       return NextResponse.json(
         { 
           success: true, 
