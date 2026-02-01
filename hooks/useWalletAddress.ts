@@ -30,6 +30,11 @@ export function useWalletAddress() {
   }
 
   const disconnectWallet = () => {
+    const farcasterConnector = connectors.find(c => c.id === 'farcasterMiniApp')
+    if (farcasterConnector) {
+      disconnect({ connector: farcasterConnector })
+      return
+    }
     disconnect()
   }
 

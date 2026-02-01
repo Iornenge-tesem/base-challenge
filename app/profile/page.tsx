@@ -35,8 +35,13 @@ export default function ProfilePage() {
   if (!address) {
     return (
       <main className="min-h-screen bg-primary-light-mode-blue dark:bg-primary-dark-blue">
-        <div className="container mx-auto px-4 py-6 pb-20 space-y-6 max-w-2xl">
-          <BackButton />
+        <div className="container mx-auto px-4 pt-2 pb-20 space-y-5 max-w-2xl">
+          <div className="flex items-center gap-3">
+            <BackButton />
+            <h1 className="text-2xl font-bold text-primary-dark-blue dark:text-primary-white">
+              Profile
+            </h1>
+          </div>
           <div className="text-center">
             <p className="text-primary-dark-blue dark:text-accent-light-gray mb-4">
               Connect your wallet to view your profile
@@ -52,24 +57,13 @@ export default function ProfilePage() {
 
   return (
     <main className="min-h-screen bg-primary-light-mode-blue dark:bg-primary-dark-blue">
-      <div className="container mx-auto px-4 py-6 pb-20 space-y-6 max-w-2xl">
-        <BackButton />
-        <header className="text-center mb-4">
+      <div className="container mx-auto px-4 pt-2 pb-20 space-y-5 max-w-2xl">
+        <div className="flex items-center gap-3">
+          <BackButton />
           <h1 className="text-2xl font-bold text-primary-dark-blue dark:text-primary-white">
             Profile
           </h1>
-          <p className="text-primary-dark-blue dark:text-accent-light-gray">
-            Manage your preferences and view your stats
-          </p>
-          <div className="mt-4 flex justify-center">
-            <button
-              onClick={disconnectWallet}
-              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm rounded-lg transition-all duration-300"
-            >
-              Disconnect Wallet
-            </button>
-          </div>
-        </header>
+        </div>
 
         <UserProfile
           address={address}
@@ -77,6 +71,18 @@ export default function ProfilePage() {
           avatar={farcasterUser?.pfpUrl}
           showThemeToggle
         />
+
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-sm text-primary-dark-blue dark:text-accent-light-gray">
+            Manage your preferences and view your stats
+          </p>
+          <button
+            onClick={disconnectWallet}
+            className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition-all duration-300"
+          >
+            Disconnect Wallet
+          </button>
+        </div>
 
         <StreakDisplay
           streak={streak}
