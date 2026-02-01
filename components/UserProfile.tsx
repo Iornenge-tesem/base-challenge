@@ -90,7 +90,7 @@ export default function UserProfile({ address, username, avatar, showThemeToggle
       
       <div className="flex-1">
         <div className="font-semibold text-primary-dark-blue dark:text-primary-white">
-          {username || 'Anonymous User'}
+          {username || 'User'}
         </div>
         <div className="text-sm text-primary-dark-blue dark:text-accent-light-gray">
           Connected

@@ -133,11 +133,16 @@ export default function ShowUpChallengePage() {
         <BackButton />
         {/* Challenge Header */}
         <div className="mb-6">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-5xl">🔥</span>
-            <h1 className="text-3xl font-bold text-primary-dark-blue dark:text-primary-white">
-              Show Up Challenge
-            </h1>
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <div className="flex items-center gap-3">
+              <span className="text-5xl">🔥</span>
+              <h1 className="text-3xl font-bold text-primary-dark-blue dark:text-primary-white">
+                Show Up Challenge
+              </h1>
+            </div>
+            <span className="inline-block px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-[10px] font-semibold rounded-full">
+              Ongoing
+            </span>
           </div>
           <p className="text-primary-dark-blue dark:text-accent-light-gray ml-16">
             Check in daily to build your streak and earn BCP

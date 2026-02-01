@@ -64,7 +64,7 @@ export default function ProfilePage() {
             <h1 className="text-2xl font-bold text-primary-dark-blue dark:text-primary-white">
               Profile
             </h1>
-            <p className="text-sm text-primary-dark-blue dark:text-accent-light-gray">
+            <p className="text-sm text-primary-dark-blue dark:text-accent-light-gray text-center">
               Manage your preferences and view your stats
             </p>
           </div>
@@ -72,7 +72,7 @@ export default function ProfilePage() {
 
         <UserProfile
           address={address}
-          username={farcasterUser?.username || ''}
+          username={farcasterUser?.displayName || ''}
           avatar={farcasterUser?.pfpUrl}
           showThemeToggle
         />

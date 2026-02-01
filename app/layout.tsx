@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import Script from "next/script";
 import BottomNav from "@/components/BottomNav";
+import TopRightAvatar from "@/components/TopRightAvatar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -49,6 +50,7 @@ export default function RootLayout({
         className={`${inter.className} bg-primary-light-mode-blue dark:bg-primary-dark-blue text-primary-dark-blue dark:text-primary-white`}
       >
         <Providers>
+          <TopRightAvatar />
           {children}
           <BottomNav />
         </Providers>

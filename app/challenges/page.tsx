@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import ChallengeCard from '@/components/ChallengeCard';
-import FarcasterUserHeader from '@/components/FarcasterUserHeader';
 import { Challenge } from '@/lib/types';
 
 export default function ChallengesPage() {
@@ -82,7 +81,6 @@ export default function ChallengesPage() {
                 <p className="text-[11px] opacity-90">Earn BCP by participating in challenges</p>
               </div>
             </div>
-            <FarcasterUserHeader />
           </div>
         </div>
       </div>
@@ -100,16 +98,12 @@ export default function ChallengesPage() {
                 <div className="absolute top-0 right-0 w-40 h-40 bg-accent-green/5 rounded-full -z-0"></div>
                 
                 <div className="relative z-10 flex items-start justify-between mb-3">
-                  <div>
-                    <div>
-                      <h3 className="text-lg font-bold text-primary-dark-blue dark:text-primary-white">
-                        {featuredChallenge.title}
-                      </h3>
-                      <span className="inline-block mt-1 px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-[10px] font-semibold rounded-full">
-                        Ongoing
-                      </span>
-                    </div>
-                  </div>
+                  <h3 className="text-lg font-bold text-primary-dark-blue dark:text-primary-white">
+                    {featuredChallenge.title}
+                  </h3>
+                  <span className="inline-block px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-[10px] font-semibold rounded-full">
+                    Ongoing
+                  </span>
                 </div>
 
                 <p className="text-primary-dark-blue dark:text-accent-light-gray text-sm mb-4">
