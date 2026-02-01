@@ -6,13 +6,17 @@ import StreakDisplay from '@/components/StreakDisplay'
 import BackButton from '@/components/BackButton'
 import { useWalletAddress } from '@/hooks/useWalletAddress'
 import { useFarcasterUser } from '@/hooks/useFarcasterUser'
+import { useChallengePayment } from '@/hooks/useChallengePayment'
 import ConnectWallet from '@/components/ConnectWallet'
+import { Address } from 'viem'
 
 export default function ProfilePage() {
   const { address } = useWalletAddress()
   const { user: farcasterUser } = useFarcasterUser()
+  const { checkBalance } = useChallengePayment()
   const [streak, setStreak] = useState(0)
   const [points, setPoints] = useState(0)
+  const [usdcBalance, setUsdcBalance] = useState('0')
 
   useEffect(() => {
     const loadStats = async () => {
@@ -29,8 +33,19 @@ export default function ProfilePage() {
       }
     }
 
+    const loadBalance = async () => {
+      if (!address) return
+      try {
+        const balanceInfo = await checkBalance(address as Address)
+        setUsdcBalance(balanceInfo.balanceFormatted || '0')
+      } catch (error) {
+        console.error('Error loading USDC balance:', error)
+      }
+    }
+
     loadStats()
-  }, [address])
+    loadBalance()
+  }, [address, checkBalance])
 
   if (!address) {
     return (
@@ -74,6 +89,7 @@ export default function ProfilePage() {
           address={address}
           username={farcasterUser?.displayName || ''}
           avatar={farcasterUser?.pfpUrl}
+          usdcBalance={usdcBalance}
           showThemeToggle
         />
 

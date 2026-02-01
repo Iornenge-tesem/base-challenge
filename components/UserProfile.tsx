@@ -6,10 +6,11 @@ interface UserProfileProps {
   address?: string | null
   username?: string
   avatar?: string
+  usdcBalance?: string
   showThemeToggle?: boolean
 }
 
-export default function UserProfile({ address, username, avatar, showThemeToggle = false }: UserProfileProps) {
+export default function UserProfile({ address, username, avatar, usdcBalance, showThemeToggle = false }: UserProfileProps) {
   if (!address) return null
 
   const [isDark, setIsDark] = useState(false)
@@ -95,6 +96,11 @@ export default function UserProfile({ address, username, avatar, showThemeToggle
         <div className="text-sm text-primary-dark-blue dark:text-accent-light-gray">
           Connected
         </div>
+        {usdcBalance && (
+          <div className="text-xs text-primary-dark-blue dark:text-accent-light-gray mt-1">
+            USDC: {usdcBalance}
+          </div>
+        )}
       </div>
 
       {showThemeToggle && (
