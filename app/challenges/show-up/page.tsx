@@ -12,9 +12,8 @@ export default function ShowUpChallengePage() {
   const [hasJoined, setHasJoined] = useState(false);
   const [participantCount, setParticipantCount] = useState(0);
   const [isLoadingParticipants, setIsLoadingParticipants] = useState(true);
-  const [isCheckingJoined, setIsCheckingJoined] = useState(true);
   const { address, isConnected, connectWallet } = useWalletAddress();
-  const { processPayment, checkParticipation, isProcessing, error, entryFee } = useBasePayment();
+  const { processPayment, isProcessing, error, entryFee } = useBasePayment();
   const challengeId = 'show-up';
 
   useEffect(() => {
@@ -43,28 +42,6 @@ export default function ShowUpChallengePage() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!address) {
-      setIsCheckingJoined(false);
-      setHasJoined(false);
-      return;
-    }
-
-    const checkIfJoined = async () => {
-      setIsCheckingJoined(true);
-      try {
-        const joined = await checkParticipation(challengeId, address);
-        setHasJoined(joined);
-      } catch (err) {
-        console.error('Error checking participation:', err);
-      } finally {
-        setIsCheckingJoined(false);
-      }
-    };
-
-    checkIfJoined();
-  }, [address, challengeId, checkParticipation]);
-
   const handleJoin = async () => {
     if (!isConnected || !address) {
       connectWallet();
@@ -76,8 +53,10 @@ export default function ShowUpChallengePage() {
       if (result.success) {
         setHasJoined(true);
       }
+      // Error is already in the hook state, will display via error message
     } catch (err: any) {
       console.error('Payment error:', err);
+      // Error should already be in hook state
     }
   };
   return (
@@ -137,12 +116,11 @@ export default function ShowUpChallengePage() {
           {!hasJoined && (
             <button
               onClick={handleJoin}
-              disabled={isCheckingJoined || isProcessing}
+              disabled={isProcessing}
               className="mt-6 w-full bg-accent-green hover:bg-accent-green-dark text-primary-dark-blue py-3 rounded-lg font-bold hover:shadow-lg transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {isCheckingJoined && 'Loading...'}
-              {!isCheckingJoined && !isConnected && 'Connect Wallet →'}
-              {!isCheckingJoined && isConnected && (isProcessing ? 'Processing Payment...' : `Join Challenge (${entryFee} USDC) →`)}
+              {!isConnected && 'Connect Wallet →'}
+              {isConnected && (isProcessing ? 'Processing Payment...' : `Join Challenge (${entryFee} USDC) →`)}
             </button>
           )}
 
@@ -157,7 +135,7 @@ export default function ShowUpChallengePage() {
         {hasJoined && <ShowUpChallenge />}
         
         {/* Message for non-participants */}
-        {!hasJoined && isConnected && !isCheckingJoined && (
+        {!hasJoined && isConnected && (
           <div className="bg-white dark:bg-primary-light-blue rounded-2xl p-8 shadow-lg text-center">
             <div className="text-5xl mb-4">🔒</div>
             <h3 className="text-xl font-semibold text-primary-dark-blue dark:text-primary-white mb-2">

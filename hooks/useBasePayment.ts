@@ -22,6 +22,10 @@ export function useBasePayment() {
         testnet: false, // Set to true for testing
       })
 
+      if (!payment?.id) {
+        throw new Error('Payment initiation failed - no payment ID received')
+      }
+
       // Poll for payment status
       let attempts = 0
       const maxAttempts = 10
@@ -30,15 +34,15 @@ export function useBasePayment() {
       while (attempts < maxAttempts && paymentStatus === 'pending') {
         await new Promise(resolve => setTimeout(resolve, 1500)) // Wait 1.5 seconds
 
-        const { status } = await getPaymentStatus({
+        const statusResponse = await getPaymentStatus({
           id: payment.id,
           testnet: false,
         })
 
-        paymentStatus = status
+        paymentStatus = statusResponse?.status || 'pending'
         attempts++
 
-        if (status === 'completed') {
+        if (paymentStatus === 'completed') {
           // Get referral code from localStorage
           const referralCode = typeof window !== 'undefined' ? localStorage.getItem('referralCode') : null
 
@@ -62,21 +66,18 @@ export function useBasePayment() {
 
           setIsProcessing(false)
           return { success: true, paymentId: payment.id }
-        } else if (status === 'failed') {
-          throw new Error('Payment failed')
+        } else if (paymentStatus === 'failed') {
+          throw new Error('Payment was rejected')
         }
       }
 
-      if (paymentStatus === 'pending') {
-        throw new Error('Payment timeout - please check your transaction status')
-      }
-
-      throw new Error('Payment was not completed')
+      // Timeout - payment still pending
+      throw new Error('Payment timeout - transaction is taking too long')
     } catch (err: any) {
-      const errorMessage = err.message || 'Payment failed'
+      const errorMessage = err?.message || 'Payment processing failed'
       setError(errorMessage)
       setIsProcessing(false)
-      throw new Error(errorMessage)
+      return { success: false, error: errorMessage }
     }
   }
 
