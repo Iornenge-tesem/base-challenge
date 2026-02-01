@@ -72,15 +72,17 @@ export default function ChallengesPage() {
   return (
     <div className="min-h-screen bg-primary-light-mode-blue dark:bg-primary-dark-blue pb-24">
       {/* Hero Section */}
-      <div className="bg-primary-modal-light dark:bg-primary-light-blue text-primary-white dark:text-primary-white py-6 px-4">
+      <div className="bg-primary-modal-light dark:bg-primary-light-blue text-primary-white dark:text-primary-white py-3 px-4">
         <div className="container mx-auto max-w-6xl">
-          <div className="flex items-center gap-3">
-            <FarcasterUserHeader />
-            <img src="/icon.svg" alt="Base Challenge" className="w-8 h-8" />
-            <div>
-              <h1 className="text-xl font-bold leading-tight">Base Challenge</h1>
-              <p className="text-xs opacity-90">Earn BCP by participating in challenges</p>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <img src="/icon.svg" alt="Base Challenge" className="w-7 h-7" />
+              <div>
+                <h1 className="text-lg font-bold leading-tight">Base Challenge</h1>
+                <p className="text-[11px] opacity-90">Earn BCP by participating in challenges</p>
+              </div>
             </div>
+            <FarcasterUserHeader />
           </div>
         </div>
       </div>
