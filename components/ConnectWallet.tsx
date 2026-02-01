@@ -4,7 +4,7 @@ import { useWalletAddress } from '@/hooks/useWalletAddress'
 import { useEffect, useState } from 'react'
 
 export default function ConnectWallet() {
-  const { address, isConnected, connectWallet, disconnectWallet } = useWalletAddress()
+  const { address, isConnected, connectWallet } = useWalletAddress()
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
@@ -29,12 +29,6 @@ export default function ConnectWallet() {
       <span className="text-sm text-primary-dark-blue dark:text-primary-white">
         {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : 'Connected'}
       </span>
-      <button
-        onClick={disconnectWallet}
-        className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm rounded transition-all duration-300"
-      >
-        Disconnect
-      </button>
     </div>
   )
 }

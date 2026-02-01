@@ -9,7 +9,7 @@ import { useFarcasterUser } from '@/hooks/useFarcasterUser'
 import ConnectWallet from '@/components/ConnectWallet'
 
 export default function ProfilePage() {
-  const { address, disconnectWallet } = useWalletAddress()
+  const { address } = useWalletAddress()
   const { user: farcasterUser } = useFarcasterUser()
   const [streak, setStreak] = useState(0)
   const [points, setPoints] = useState(0)
@@ -57,12 +57,17 @@ export default function ProfilePage() {
 
   return (
     <main className="min-h-screen bg-primary-light-mode-blue dark:bg-primary-dark-blue">
-      <div className="container mx-auto px-4 pt-2 pb-20 space-y-5 max-w-2xl">
+      <div className="container mx-auto px-4 pt-2 pb-20 space-y-4 max-w-2xl">
         <div className="flex items-center gap-3">
           <BackButton />
-          <h1 className="text-2xl font-bold text-primary-dark-blue dark:text-primary-white">
-            Profile
-          </h1>
+          <div>
+            <h1 className="text-2xl font-bold text-primary-dark-blue dark:text-primary-white">
+              Profile
+            </h1>
+            <p className="text-sm text-primary-dark-blue dark:text-accent-light-gray">
+              Manage your preferences and view your stats
+            </p>
+          </div>
         </div>
 
         <UserProfile
@@ -71,18 +76,6 @@ export default function ProfilePage() {
           avatar={farcasterUser?.pfpUrl}
           showThemeToggle
         />
-
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-sm text-primary-dark-blue dark:text-accent-light-gray">
-            Manage your preferences and view your stats
-          </p>
-          <button
-            onClick={disconnectWallet}
-            className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition-all duration-300"
-          >
-            Disconnect Wallet
-          </button>
-        </div>
 
         <StreakDisplay
           streak={streak}
