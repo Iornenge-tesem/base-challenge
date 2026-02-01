@@ -32,8 +32,8 @@ export function useFarcasterUser() {
         if (miniAppStatus) {
           const context = await Promise.race([
             sdk.context,
-            new Promise<null>((_, reject) => setTimeout(() => reject(new Error('Context timeout')), 2000))
-          ]) as Awaited<ReturnType<typeof sdk.context>>
+            new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Context timeout')), 2000))
+          ])
           
           if (context?.user) {
             setUser({
