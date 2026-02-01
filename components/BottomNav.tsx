@@ -22,6 +22,11 @@ export default function BottomNav() {
       icon: '👤',
       href: '/profile',
     },
+  ]
+
+  return (
+    <nav className="fixed bottom-0 left-0 right-0 bg-primary-modal-light dark:bg-primary-light-blue border-t-2 border-primary-modal-light dark:border-primary-light-blue safe-area-bottom z-40 shadow-lg">
+      <div className="max-w-4xl mx-auto px-4">
         <div className="flex justify-around items-center h-16">
           {navItems.map((item) => {
             const isActive = pathname === item.href
