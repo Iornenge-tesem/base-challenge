@@ -1,7 +1,6 @@
 'use client'
 
 import { useFarcasterUser } from '@/hooks/useFarcasterUser'
-import Image from 'next/image'
 
 export default function FarcasterUserHeader() {
   const { user, isLoading } = useFarcasterUser()
@@ -13,12 +12,11 @@ export default function FarcasterUserHeader() {
   return (
     <div className="flex items-center gap-3 px-4 py-3 bg-white/10 dark:bg-primary-light-blue/30 backdrop-blur-sm">
       {user.pfpUrl && (
-        <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
-          <Image
+        <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+          <img
             src={user.pfpUrl}
             alt={user.username || 'User'}
-            fill
-            className="object-cover"
+            className="w-full h-full object-cover"
           />
         </div>
       )}
