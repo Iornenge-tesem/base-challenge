@@ -4,9 +4,7 @@ import { useState, useEffect } from 'react'
 import CheckInButton from './CheckInButton'
 import StreakDisplay from './StreakDisplay'
 import LeaderBoard from './LeaderBoard'
-import UserProfile from './UserProfile'
 import OnboardingModal from './OnboardingModal'
-import UserProfileSkeleton from './skeletons/UserProfileSkeleton'
 import StreakDisplaySkeleton from './skeletons/StreakDisplaySkeleton'
 import CheckInButtonSkeleton from './skeletons/CheckInButtonSkeleton'
 import LeaderBoardSkeleton from './skeletons/LeaderBoardSkeleton'
@@ -231,17 +229,7 @@ export default function ShowUpChallenge() {
         </div>
       )}
       
-      <div className="max-w-4xl mx-auto space-y-6 pb-24">
-        {isLoading ? (
-          <UserProfileSkeleton />
-        ) : (
-          <UserProfile 
-            address={currentAddress}
-            username={username}
-            avatar={avatar}
-          />
-        )}
-        
+      <div className="max-w-4xl mx-auto space-y-4 pb-12">
         {isLoading ? (
           <StreakDisplaySkeleton />
         ) : (

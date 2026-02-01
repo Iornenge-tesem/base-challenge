@@ -128,8 +128,8 @@ export default function ShowUpChallengePage() {
     }
   };
   return (
-    <div className="min-h-screen bg-primary-light-mode-blue dark:bg-primary-dark-blue pb-24">
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
+    <div className="min-h-screen bg-primary-light-mode-blue dark:bg-primary-dark-blue pb-12">
+      <div className="container mx-auto px-4 py-4 max-w-2xl">
         <BackButton />
         {/* Challenge Header */}
         <div className="mb-6">
