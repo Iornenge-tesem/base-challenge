@@ -71,7 +71,7 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <SDKInitializer>
       <WagmiProvider config={config}>
-        <OnchainKitProvider chain={base} config={{ apiKey: process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY }}>
+         <OnchainKitProvider chain={base}>
           <QueryClientProvider client={queryClient}>
             {children}
           </QueryClientProvider>
