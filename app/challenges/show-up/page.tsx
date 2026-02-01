@@ -7,6 +7,8 @@ import BackButton from '@/components/BackButton';
 import { useWalletAddress } from '@/hooks/useWalletAddress';
 import { useChallengePayment } from '@/hooks/useChallengePayment';
 
+export const dynamic = 'force-dynamic';
+
 export default function ShowUpChallengePage() {
   const [hasJoined, setHasJoined] = useState(false);
   const [error, setError] = useState<string | null>(null);
