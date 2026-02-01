@@ -4,7 +4,13 @@ import { rateLimit } from '@/lib/rateLimit'
 
 export async function POST(request: NextRequest) {
   try {
-    const { wallet_address, challenge_id = 'show-up' } = await request.json()
+    const { 
+      wallet_address, 
+      challenge_id = 'show-up',
+      farcaster_username,
+      farcaster_display_name,
+      farcaster_pfp_url
+    } = await request.json()
 
     if (!wallet_address) {
       return NextResponse.json({ error: 'Wallet address required' }, { status: 400 })
@@ -97,17 +103,24 @@ export async function POST(request: NextRequest) {
     const newTotalCheckins = (stats?.total_checkins || 0) + 1
     const newLongestStreak = Math.max(stats?.longest_streak || 0, newStreak)
 
+    const statsUpdate: any = {
+      wallet_address,
+      total_bcp: newTotalBcp,
+      current_streak: newStreak,
+      longest_streak: newLongestStreak,
+      total_checkins: newTotalCheckins,
+      last_checkin_date: today,
+      updated_at: new Date().toISOString(),
+    }
+
+    // Add Farcaster data if provided
+    if (farcaster_username) statsUpdate.farcaster_username = farcaster_username
+    if (farcaster_display_name) statsUpdate.farcaster_display_name = farcaster_display_name
+    if (farcaster_pfp_url) statsUpdate.farcaster_pfp_url = farcaster_pfp_url
+
     const { data: updatedStats, error: statsError } = await supabase
       .from('user_stats')
-      .upsert({
-        wallet_address,
-        total_bcp: newTotalBcp,
-        current_streak: newStreak,
-        longest_streak: newLongestStreak,
-        total_checkins: newTotalCheckins,
-        last_checkin_date: today,
-        updated_at: new Date().toISOString(),
-      })
+      .upsert(statsUpdate)
       .select()
       .single()
 
