@@ -90,24 +90,24 @@ export default function ChallengesPage() {
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Featured Challenge */}
         {!isLoading && featuredChallenge && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold text-primary-dark-blue dark:text-primary-white mb-4">
+          <div className="mb-8">
+            <h2 className="text-xl font-bold text-primary-dark-blue dark:text-primary-white mb-3">
               ⭐ Featured Challenge
             </h2>
             <a href={`/challenges/${featuredChallenge.id}`}>
-              <div className="bg-white dark:bg-primary-light-blue rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-accent-green dark:border-accent-green relative overflow-hidden">
+              <div className="bg-white dark:bg-primary-light-blue rounded-2xl p-5 shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-accent-green dark:border-accent-green relative overflow-hidden">
                 {/* Gradient background */}
                 <div className="absolute top-0 right-0 w-40 h-40 bg-accent-green/5 rounded-full -z-0"></div>
                 
-                <div className="relative z-10 flex items-start justify-between mb-6">
+                <div className="relative z-10 flex items-start justify-between mb-4">
                   <div>
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-6xl">{featuredChallenge.thumbnail}</span>
+                    <div className="flex items-center gap-3 mb-1">
+                      <span className="text-5xl">{featuredChallenge.thumbnail}</span>
                       <div>
-                        <h3 className="text-3xl font-bold text-primary-dark-blue dark:text-primary-white">
+                        <h3 className="text-2xl font-bold text-primary-dark-blue dark:text-primary-white">
                           {featuredChallenge.title}
                         </h3>
-                        <span className="inline-block mt-2 px-3 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-semibold rounded-full">
+                        <span className="inline-block mt-1 px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-[10px] font-semibold rounded-full">
                           Ongoing
                         </span>
                       </div>
@@ -115,32 +115,32 @@ export default function ChallengesPage() {
                   </div>
                 </div>
 
-                <p className="text-primary-dark-blue dark:text-accent-light-gray text-lg mb-6">
+                <p className="text-primary-dark-blue dark:text-accent-light-gray text-sm mb-4">
                   {featuredChallenge.description}
                 </p>
 
                 {/* Stats */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-6">
-                  <div className="bg-primary-light-mode-blue dark:bg-primary-dark-blue rounded-lg p-3 sm:p-4 text-center min-w-0">
-                    <div className="font-bold text-primary-dark-blue dark:text-primary-white leading-tight break-words text-[clamp(0.85rem,2.4vw,1.5rem)]">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-4">
+                  <div className="bg-primary-light-mode-blue dark:bg-primary-dark-blue rounded-lg p-2 sm:p-3 text-center min-w-0">
+                    <div className="font-bold text-primary-dark-blue dark:text-primary-white leading-tight break-words text-[clamp(0.8rem,2.2vw,1.3rem)]">
                       {participantCount.toLocaleString()}
                     </div>
                     <div className="text-[10px] sm:text-xs text-primary-dark-blue dark:text-accent-gray mt-1 leading-tight">Participants</div>
                   </div>
-                  <div className="bg-accent-green/10 dark:bg-accent-green/20 rounded-lg p-3 sm:p-4 text-center min-w-0">
-                    <div className="font-bold text-accent-green leading-tight break-words text-[clamp(0.85rem,2.4vw,1.5rem)]">
+                  <div className="bg-accent-green/10 dark:bg-accent-green/20 rounded-lg p-2 sm:p-3 text-center min-w-0">
+                    <div className="font-bold text-accent-green leading-tight break-words text-[clamp(0.8rem,2.2vw,1.3rem)]">
                       {featuredChallenge.bcpReward}
                     </div>
                     <div className="text-[10px] sm:text-xs text-primary-dark-blue dark:text-accent-gray mt-1 leading-tight">BCP/Day</div>
                   </div>
-                  <div className="bg-primary-light-mode-blue dark:bg-primary-dark-blue rounded-lg p-3 sm:p-4 text-center min-w-0">
-                    <div className="font-bold text-primary-dark-blue dark:text-primary-white leading-tight break-words text-[clamp(0.85rem,2.4vw,1.5rem)]">
+                  <div className="bg-primary-light-mode-blue dark:bg-primary-dark-blue rounded-lg p-2 sm:p-3 text-center min-w-0">
+                    <div className="font-bold text-primary-dark-blue dark:text-primary-white leading-tight break-words text-[clamp(0.8rem,2.2vw,1.3rem)]">
                       ∞
                     </div>
                     <div className="text-[10px] sm:text-xs text-primary-dark-blue dark:text-accent-gray mt-1 leading-tight">Duration</div>
                   </div>
-                  <div className="bg-primary-light-mode-blue dark:bg-primary-dark-blue rounded-lg p-3 sm:p-4 text-center min-w-0">
-                    <div className="font-bold text-primary-dark-blue dark:text-primary-white leading-tight break-words text-[clamp(0.85rem,2.4vw,1.5rem)]">
+                  <div className="bg-primary-light-mode-blue dark:bg-primary-dark-blue rounded-lg p-2 sm:p-3 text-center min-w-0">
+                    <div className="font-bold text-primary-dark-blue dark:text-primary-white leading-tight break-words text-[clamp(0.8rem,2.2vw,1.3rem)]">
                       {featuredChallenge.entryFee}
                     </div>
                     <div className="text-[10px] sm:text-xs text-primary-dark-blue dark:text-accent-gray mt-1 leading-tight">USDC</div>
@@ -148,7 +148,7 @@ export default function ChallengesPage() {
                 </div>
 
                 <div className="flex gap-3">
-                  <button className="flex-1 bg-accent-green hover:bg-accent-green-dark text-primary-dark-blue py-3 rounded-lg font-bold hover:shadow-lg transition-all">
+                  <button className="flex-1 bg-accent-green hover:bg-accent-green-dark text-primary-dark-blue py-2 rounded-lg text-sm font-bold hover:shadow-lg transition-all">
                     Join Challenge (0.3 USDC) →
                   </button>
                 </div>
