@@ -17,22 +17,26 @@ export default function ChallengeCard({ challenge }: ChallengeCardProps) {
 
   useEffect(() => {
     if (!address || !isConnected || !isShowUpChallenge) {
+      console.log('ChallengeCard: Skipping check', { address, isConnected, isShowUpChallenge });
       setHasJoined(false);
       return;
     }
 
     const checkParticipation = async () => {
       setIsChecking(true);
+      console.log('ChallengeCard: Checking participation for', { address, challengeId: challenge.id });
       try {
         const response = await fetch(`/api/check-participation?challenge_id=${challenge.id}&wallet_address=${address}`);
         if (response.ok) {
           const data = await response.json();
+          console.log('ChallengeCard: Participation check result', data);
           setHasJoined(data.hasJoined || false);
         } else {
+          console.log('ChallengeCard: Participation check failed', response.status);
           setHasJoined(false);
         }
       } catch (error) {
-        console.error('Error checking participation:', error);
+        console.error('ChallengeCard: Error checking participation:', error);
         setHasJoined(false);
       } finally {
         setIsChecking(false);
@@ -119,7 +123,7 @@ export default function ChallengeCard({ challenge }: ChallengeCardProps) {
           </div>
         ) : (
           <div className="mt-4 w-full bg-accent-green hover:bg-accent-green-dark text-primary-dark-blue py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 text-center">
-            {isChecking ? 'Checking...' : 'View Details →'}
+            {isChecking ? 'Checking...' : (address && isConnected ? 'View Details →' : 'View Details →')}
           </div>
         )
       ) : (
