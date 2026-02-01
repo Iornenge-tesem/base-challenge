@@ -11,12 +11,12 @@ interface ChallengeCardProps {
 
 export default function ChallengeCard({ challenge }: ChallengeCardProps) {
   const isShowUpChallenge = challenge.id === 'show-up';
-  const { address } = useWalletAddress();
+  const { address, isConnected } = useWalletAddress();
   const [hasJoined, setHasJoined] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
 
   useEffect(() => {
-    if (!address || !isShowUpChallenge) {
+    if (!address || !isConnected || !isShowUpChallenge) {
       setHasJoined(false);
       return;
     }
@@ -28,16 +28,19 @@ export default function ChallengeCard({ challenge }: ChallengeCardProps) {
         if (response.ok) {
           const data = await response.json();
           setHasJoined(data.hasJoined || false);
+        } else {
+          setHasJoined(false);
         }
       } catch (error) {
         console.error('Error checking participation:', error);
+        setHasJoined(false);
       } finally {
         setIsChecking(false);
       }
     };
 
     checkParticipation();
-  }, [address, challenge.id, isShowUpChallenge]);
+  }, [address, isConnected, challenge.id, isShowUpChallenge]);
 
   const handleClick = (e: React.MouseEvent) => {
     if (!isShowUpChallenge) {
