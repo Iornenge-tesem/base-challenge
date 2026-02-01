@@ -6,6 +6,7 @@ import Script from "next/script";
 import BottomNav from "@/components/BottomNav";
 import TopRightAvatar from "@/components/TopRightAvatar";
 import ReferralTracker from "@/components/ReferralTracker";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -56,6 +57,7 @@ export default function RootLayout({
           {children}
           <BottomNav />
         </Providers>
+        <SpeedInsights />
       </body>
     </html>
   );

@@ -18,9 +18,23 @@ export function useFarcasterUser() {
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        const miniAppStatus = await sdk.isInMiniApp()
+        // Check if SDK is available
+        if (typeof window === 'undefined' || !sdk) {
+          setIsLoading(false)
+          return
+        }
+
+        const miniAppStatus = await Promise.race([
+          sdk.isInMiniApp(),
+          new Promise((resolve) => setTimeout(() => resolve(false), 2000)) // 2s timeout
+        ])
+        
         if (miniAppStatus) {
-          const context = await sdk.context
+          const context = await Promise.race([
+            sdk.context,
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Context timeout')), 2000))
+          ])
+          
           if (context?.user) {
             setUser({
               fid: context.user.fid,
