@@ -29,7 +29,7 @@ export default function ShowUpChallenge() {
 
   // Get wallet address
   const { address } = useWalletAddress()
-  const { username: farcasterUsername, displayName: farcasterDisplayName, pfpUrl: farcasterPfpUrl } = useFarcasterUser()
+  const { user: farcasterUser } = useFarcasterUser()
 
   useEffect(() => {
     if (address) {
@@ -84,9 +84,9 @@ export default function ShowUpChallenge() {
         body: JSON.stringify({
           wallet_address: currentAddress,
           challenge_id: 'show-up',
-          farcaster_username: farcasterUsername,
-          farcaster_display_name: farcasterDisplayName,
-          farcaster_pfp_url: farcasterPfpUrl,
+          farcaster_username: farcasterUser?.username,
+          farcaster_display_name: farcasterUser?.displayName,
+          farcaster_pfp_url: farcasterUser?.pfpUrl,
         }),
       })
 
