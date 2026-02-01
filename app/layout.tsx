@@ -20,17 +20,13 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     other: {
       "fc:miniapp": JSON.stringify({
-        version: "next",
-        imageUrl: "https://base-challenge-iota.vercel.app/icon.svg",
-        "base:app_id": "697d6a6fc6a03f3fe39cb530",
+        version: "1",
+        imageUrl: "https://base-challenge-iota.vercel.app/icon.png",
         button: {
-          title: `Launch Base Challenge`,
+          title: "Join the Base Challenge",
           action: {
-            type: "launch_miniapp",
-            name: "Base Challenge",
-            url: "https://base-challenge-iota.vercel.app",
-            splashImageUrl: "https://base-challenge-iota.vercel.app/icon.svg",
-            splashBackgroundColor: "#0a2540 ",
+            name: "Launch Base Challenge",
+            url: "https://base-challenge-iota.vercel.app"
           },
         },
       }),
