@@ -14,12 +14,12 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Check if user has joined the challenge
+    // Check if user has joined the challenge (case-insensitive)
     const { data, error } = await supabase
       .from('challenge_participants')
       .select('*')
       .eq('challenge_id', challengeId)
-      .eq('wallet_address', walletAddress.toLowerCase())
+      .ilike('wallet_address', walletAddress)
       .single()
 
     if (error && error.code !== 'PGRST116') {
