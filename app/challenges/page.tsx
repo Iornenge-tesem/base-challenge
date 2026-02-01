@@ -99,18 +99,15 @@ export default function ChallengesPage() {
                 {/* Gradient background */}
                 <div className="absolute top-0 right-0 w-40 h-40 bg-accent-green/5 rounded-full -z-0"></div>
                 
-                <div className="relative z-10 flex items-start justify-between mb-4">
+                <div className="relative z-10 flex items-start justify-between mb-3">
                   <div>
-                    <div className="flex items-center gap-3 mb-1">
-                      <span className="text-5xl">{featuredChallenge.thumbnail}</span>
-                      <div>
-                        <h3 className="text-2xl font-bold text-primary-dark-blue dark:text-primary-white">
-                          {featuredChallenge.title}
-                        </h3>
-                        <span className="inline-block mt-1 px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-[10px] font-semibold rounded-full">
-                          Ongoing
-                        </span>
-                      </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-primary-dark-blue dark:text-primary-white">
+                        {featuredChallenge.title}
+                      </h3>
+                      <span className="inline-block mt-1 px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-[10px] font-semibold rounded-full">
+                        Ongoing
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -120,30 +117,18 @@ export default function ChallengesPage() {
                 </p>
 
                 {/* Stats */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-4">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-4">
                   <div className="bg-primary-light-mode-blue dark:bg-primary-dark-blue rounded-lg p-2 sm:p-3 text-center min-w-0">
                     <div className="font-bold text-primary-dark-blue dark:text-primary-white leading-tight break-words text-[clamp(0.8rem,2.2vw,1.3rem)]">
                       {participantCount.toLocaleString()}
                     </div>
                     <div className="text-[10px] sm:text-xs text-primary-dark-blue dark:text-accent-gray mt-1 leading-tight">Participants</div>
                   </div>
-                  <div className="bg-accent-green/10 dark:bg-accent-green/20 rounded-lg p-2 sm:p-3 text-center min-w-0">
-                    <div className="font-bold text-accent-green leading-tight break-words text-[clamp(0.8rem,2.2vw,1.3rem)]">
-                      {featuredChallenge.bcpReward}
-                    </div>
-                    <div className="text-[10px] sm:text-xs text-primary-dark-blue dark:text-accent-gray mt-1 leading-tight">BCP/Day</div>
-                  </div>
                   <div className="bg-primary-light-mode-blue dark:bg-primary-dark-blue rounded-lg p-2 sm:p-3 text-center min-w-0">
                     <div className="font-bold text-primary-dark-blue dark:text-primary-white leading-tight break-words text-[clamp(0.8rem,2.2vw,1.3rem)]">
                       ∞
                     </div>
                     <div className="text-[10px] sm:text-xs text-primary-dark-blue dark:text-accent-gray mt-1 leading-tight">Duration</div>
-                  </div>
-                  <div className="bg-primary-light-mode-blue dark:bg-primary-dark-blue rounded-lg p-2 sm:p-3 text-center min-w-0">
-                    <div className="font-bold text-primary-dark-blue dark:text-primary-white leading-tight break-words text-[clamp(0.8rem,2.2vw,1.3rem)]">
-                      {featuredChallenge.entryFee}
-                    </div>
-                    <div className="text-[10px] sm:text-xs text-primary-dark-blue dark:text-accent-gray mt-1 leading-tight">USDC</div>
                   </div>
                 </div>
 
