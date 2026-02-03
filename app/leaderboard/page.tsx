@@ -14,7 +14,7 @@ export default function GlobalLeaderboardPage() {
       const response = await fetch('/api/leaderboard');
       if (response.ok) {
         const data = await response.json();
-        setLeaderboard(data);
+        setLeaderboard(data.leaderboard);
       }
     } catch (error) {
       console.error('Error fetching leaderboard:', error);

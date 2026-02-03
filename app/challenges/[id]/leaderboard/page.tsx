@@ -18,7 +18,7 @@ export default function ChallengeLeaderboardPage() {
         const response = await fetch(`/api/leaderboard?challenge_id=${challengeId}`);
         if (response.ok) {
           const data = await response.json();
-          setLeaderboard(data);
+          setLeaderboard(data.leaderboard);
         }
       } catch (error) {
         console.error('Error fetching leaderboard:', error);
