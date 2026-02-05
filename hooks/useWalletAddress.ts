@@ -1,20 +1,36 @@
 'use client'
 
 import { useAccount, useConnect } from 'wagmi'
-import { useMiniKit } from '@coinbase/onchainkit/minikit'
 import { useEffect, useState } from 'react'
+import { sdk } from '@farcaster/miniapp-sdk'
 
 export function useWalletAddress() {
   const { address, isConnected } = useAccount()
   const { connect, connectors } = useConnect()
-  const { context } = useMiniKit()
   const [isMounted, setIsMounted] = useState(false)
+  const [userContext, setUserContext] = useState<any>(null)
 
   useEffect(() => {
     setIsMounted(true)
   }, [])
 
-  const userFid = context?.user?.fid
+  // Fetch Farcaster user data from SDK
+  useEffect(() => {
+    const fetchUserContext = async () => {
+      try {
+        const context = await sdk.context
+        console.log('[useWalletAddress] Farcaster context:', context)
+        setUserContext(context)
+      } catch (error) {
+        console.log('[useWalletAddress] Not in Farcaster context:', error)
+        setUserContext(null)
+      }
+    }
+
+    if (isMounted) {
+      fetchUserContext()
+    }
+  }, [isMounted])
 
   const connectWallet = async () => {
     if (!isMounted) return
@@ -32,7 +48,6 @@ export function useWalletAddress() {
     address: isMounted ? address : null,
     isConnected: isMounted ? isConnected : false,
     connectWallet,
-    userFid,
-    userContext: context,
+    userContext,
   }
 }

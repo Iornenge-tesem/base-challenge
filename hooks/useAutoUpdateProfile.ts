@@ -15,7 +15,7 @@ export function useAutoUpdateProfile() {
     }
 
     if (!userContext?.user) {
-      console.log('[useAutoUpdateProfile] No userContext.user, skipping')
+      console.log('[useAutoUpdateProfile] No userContext.user, context available:', !!userContext)
       return
     }
 
@@ -24,7 +24,14 @@ export function useAutoUpdateProfile() {
         const displayName = userContext.user.displayName || userContext.user.username
         const pfpUrl = userContext.user.pfpUrl
 
-        console.log('[useAutoUpdateProfile] Updating with:', { address, displayName, pfpUrl, fullUser: userContext.user })
+        console.log('[useAutoUpdateProfile] User data from SDK:', {
+          displayName: userContext.user.displayName,
+          username: userContext.user.username,
+          pfpUrl: userContext.user.pfpUrl,
+          fid: userContext.user.fid,
+        })
+
+        console.log('[useAutoUpdateProfile] Sending to backend:', { address, displayName, pfpUrl })
 
         const response = await fetch('/api/update-participant-profile', {
           method: 'POST',
@@ -53,6 +60,7 @@ export function useAutoUpdateProfile() {
     // Also update periodically
     const interval = setInterval(updateProfile, 60000)
     return () => clearInterval(interval)
-  }, [address, userContext])
+  }, [address, userContext?.user?.displayName, userContext?.user?.pfpUrl, userContext?.user?.username])
+}
 }
 
