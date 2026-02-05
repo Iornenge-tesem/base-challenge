@@ -62,5 +62,4 @@ export function useAutoUpdateProfile() {
     return () => clearInterval(interval)
   }, [address, userContext?.user?.displayName, userContext?.user?.pfpUrl, userContext?.user?.username])
 }
-}
 
