@@ -7,15 +7,24 @@ export function useAutoUpdateProfile() {
   const { address, userContext } = useWalletAddress()
 
   useEffect(() => {
-    if (!address || !userContext?.user) return
+    console.log('[useAutoUpdateProfile] Checking - address:', address, 'userContext:', userContext)
+
+    if (!address) {
+      console.log('[useAutoUpdateProfile] No address, skipping')
+      return
+    }
+
+    if (!userContext?.user) {
+      console.log('[useAutoUpdateProfile] No userContext.user, skipping')
+      return
+    }
 
     const updateProfile = async () => {
       try {
-        // Extract display name and pfp from Farcaster context
         const displayName = userContext.user.displayName || userContext.user.username
         const pfpUrl = userContext.user.pfpUrl
 
-        console.log('Auto-updating profile:', { address, displayName, pfpUrl })
+        console.log('[useAutoUpdateProfile] Updating with:', { address, displayName, pfpUrl, fullUser: userContext.user })
 
         const response = await fetch('/api/update-participant-profile', {
           method: 'POST',
@@ -27,24 +36,23 @@ export function useAutoUpdateProfile() {
           }),
         })
 
+        const result = await response.json()
+        console.log('[useAutoUpdateProfile] Response:', result, 'status:', response.status)
+
         if (!response.ok) {
-          const error = await response.json()
-          console.error('Failed to update profile:', error)
-        } else {
-          const result = await response.json()
-          console.log('Profile auto-update success:', result)
+          console.error('[useAutoUpdateProfile] Failed:', result)
         }
       } catch (error) {
-        console.error('Error auto-updating profile:', error)
+        console.error('[useAutoUpdateProfile] Error:', error)
       }
     }
 
-    // Call immediately when wallet connects
+    // Call immediately
     updateProfile()
 
-    // Also update on an interval in case they change their avatar while connected
-    const interval = setInterval(updateProfile, 60000) // Check every minute
-
+    // Also update periodically
+    const interval = setInterval(updateProfile, 60000)
     return () => clearInterval(interval)
-  }, [address, userContext?.user?.displayName, userContext?.user?.pfpUrl, userContext?.user?.username])
+  }, [address, userContext])
 }
+
