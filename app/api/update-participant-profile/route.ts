@@ -5,6 +5,8 @@ export async function POST(request: NextRequest) {
   try {
     const { walletAddress, displayName, pfpUrl } = await request.json()
 
+    console.log('Update profile received:', { walletAddress, displayName, pfpUrl });
+
     if (!walletAddress) {
       return NextResponse.json(
         { error: 'Wallet address required' },
@@ -18,8 +20,8 @@ export async function POST(request: NextRequest) {
     const { error } = await supabase
       .from('challenge_participants')
       .update({
-        displayName: displayName || null,
-        pfpUrl: pfpUrl || null,
+        displayname: displayName || null,
+        farcaster_pfp_url: pfpUrl || null,
       })
       .eq('wallet_address', normalizedAddress)
       .eq('challenge_id', 'show-up')

@@ -23,15 +23,15 @@ export async function GET(request: NextRequest) {
     if (walletAddresses.length > 0) {
       const { data: participants } = await supabase
         .from('challenge_participants')
-        .select('wallet_address, "displayName", "pfpUrl"')
+        .select('wallet_address, displayname, farcaster_pfp_url')
         .eq('challenge_id', challenge_id)
         .in('wallet_address', walletAddresses)
 
       if (participants) {
         for (const p of participants) {
           participantMap.set(p.wallet_address.toLowerCase(), {
-            displayName: p.displayName,
-            pfpUrl: p.pfpUrl,
+            displayName: p.displayname,
+            pfpUrl: p.farcaster_pfp_url,
           })
         }
       }

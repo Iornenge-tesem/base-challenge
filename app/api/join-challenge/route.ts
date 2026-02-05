@@ -18,6 +18,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { walletAddress, challengeId, transactionHash, paymentMethod, referralCode, displayName, pfpUrl } = body
 
+    console.log('Join-challenge received:', { walletAddress, challengeId, displayName, pfpUrl, paymentMethod });
+
     // Validate inputs
     if (!walletAddress || !isAddress(walletAddress)) {
       return NextResponse.json(
@@ -52,8 +54,8 @@ export async function POST(request: NextRequest) {
           transaction_hash: transactionHash, // Store payment ID as transaction_hash
           status: 'active',
           referral_code: referralCode || null, // Store referral code if present
-          displayName: displayName || null,
-          pfpUrl: pfpUrl || null,
+          displayname: displayName || null,
+          farcaster_pfp_url: pfpUrl || null,
         })
 
       if (insertError) {
