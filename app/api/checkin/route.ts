@@ -4,7 +4,7 @@ import { rateLimit } from '@/lib/rateLimit'
 
 export async function POST(request: NextRequest) {
   try {
-    const { wallet_address, challenge_id = 'show-up' } = await request.json()
+    const { wallet_address, challenge_id = 'show-up', displayName, pfpUrl } = await request.json()
 
     if (!wallet_address) {
       return NextResponse.json({ error: 'Wallet address required' }, { status: 400 })
@@ -27,6 +27,17 @@ export async function POST(request: NextRequest) {
         { error: 'You must join the challenge before checking in. Please complete the payment first.' },
         { status: 403 }
       )
+    }
+
+    if (displayName || pfpUrl) {
+      await supabase
+        .from('challenge_participants')
+        .update({
+          displayname: displayName || null,
+          farcaster_pfp_url: pfpUrl || null,
+        })
+        .eq('wallet_address', normalizedAddress)
+        .eq('challenge_id', challenge_id)
     }
 
     // Rate limiting: 10 requests per hour per wallet

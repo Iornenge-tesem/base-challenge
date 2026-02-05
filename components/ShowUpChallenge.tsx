@@ -67,6 +67,9 @@ export default function ShowUpChallenge() {
     if (!address) return
 
     try {
+      const displayName = userContext?.user?.displayName || userContext?.user?.username
+      const pfpUrl = userContext?.user?.pfpUrl
+
       // Call the real API to check in
       const response = await fetch('/api/checkin', {
         method: 'POST',
@@ -76,6 +79,8 @@ export default function ShowUpChallenge() {
         body: JSON.stringify({
           wallet_address: address,
           challenge_id: 'show-up',
+          displayName,
+          pfpUrl,
         }),
       })
 
