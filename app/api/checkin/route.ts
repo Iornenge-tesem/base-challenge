@@ -10,11 +10,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Wallet address required' }, { status: 400 })
     }
 
+    const normalizedAddress = wallet_address.toLowerCase()
+
     // Verify user has joined the challenge by checking challenge_participants
     const { data: participant, error: participantError } = await supabase
       .from('challenge_participants')
       .select('*')
-      .ilike('wallet_address', wallet_address)
+      .ilike('wallet_address', normalizedAddress)
       .eq('challenge_id', challenge_id)
       .eq('status', 'active')
       .single()
@@ -28,7 +30,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Rate limiting: 10 requests per hour per wallet
-    const rateLimitKey = `checkin:${wallet_address}`
+    const rateLimitKey = `checkin:${normalizedAddress}`
     const isAllowed = rateLimit(rateLimitKey, {
       maxRequests: 10,
       windowMs: 60 * 60 * 1000, // 1 hour
@@ -47,7 +49,7 @@ export async function POST(request: NextRequest) {
     const { data: existingCheckIn } = await supabase
       .from('checkins')
       .select('*')
-      .eq('wallet_address', wallet_address)
+      .eq('wallet_address', normalizedAddress)
       .eq('check_in_date', today)
       .eq('challenge_id', challenge_id)
       .single()
@@ -63,7 +65,7 @@ export async function POST(request: NextRequest) {
     let { data: stats } = await supabase
       .from('user_stats')
       .select('*')
-      .eq('wallet_address', wallet_address)
+      .ilike('wallet_address', normalizedAddress)
       .single()
 
     // Calculate new streak
@@ -82,7 +84,7 @@ export async function POST(request: NextRequest) {
     const { data: checkIn, error: checkInError } = await supabase
       .from('checkins')
       .insert({
-        wallet_address,
+        wallet_address: normalizedAddress,
         challenge_id,
         bcp_earned: bcpEarned,
         streak: newStreak,
@@ -101,14 +103,14 @@ export async function POST(request: NextRequest) {
     const { data: updatedStats, error: statsError } = await supabase
       .from('user_stats')
       .upsert({
-        wallet_address,
+        wallet_address: normalizedAddress,
         total_bcp: newTotalBcp,
         current_streak: newStreak,
         longest_streak: newLongestStreak,
         total_checkins: newTotalCheckins,
         last_checkin_date: today,
         updated_at: new Date().toISOString(),
-      })
+      }, { onConflict: 'wallet_address' })
       .select()
       .single()
 
@@ -138,13 +140,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Wallet address required' }, { status: 400 })
     }
 
+    const normalizedAddress = wallet_address.toLowerCase()
+
     const today = new Date().toISOString().split('T')[0]
 
     // Check if checked in today
     const { data: todayCheckIn } = await supabase
       .from('checkins')
       .select('*')
-      .eq('wallet_address', wallet_address)
+      .eq('wallet_address', normalizedAddress)
       .eq('check_in_date', today)
       .eq('challenge_id', 'show-up')
       .single()
@@ -153,7 +157,7 @@ export async function GET(request: NextRequest) {
     const { data: stats } = await supabase
       .from('user_stats')
       .select('*')
-      .eq('wallet_address', wallet_address)
+      .ilike('wallet_address', normalizedAddress)
       .single()
 
     return NextResponse.json({
