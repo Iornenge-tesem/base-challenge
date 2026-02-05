@@ -7,31 +7,14 @@ export function useAutoUpdateProfile() {
   const { address, userContext } = useWalletAddress()
 
   useEffect(() => {
-    console.log('[useAutoUpdateProfile] Checking - address:', address, 'userContext:', userContext)
+    if (!address) return
 
-    if (!address) {
-      console.log('[useAutoUpdateProfile] No address, skipping')
-      return
-    }
-
-    if (!userContext?.user) {
-      console.log('[useAutoUpdateProfile] No userContext.user, context available:', !!userContext)
-      return
-    }
+    if (!userContext?.user) return
 
     const updateProfile = async () => {
       try {
         const displayName = userContext.user.displayName || userContext.user.username
         const pfpUrl = userContext.user.pfpUrl
-
-        console.log('[useAutoUpdateProfile] User data from SDK:', {
-          displayName: userContext.user.displayName,
-          username: userContext.user.username,
-          pfpUrl: userContext.user.pfpUrl,
-          fid: userContext.user.fid,
-        })
-
-        console.log('[useAutoUpdateProfile] Sending to backend:', { address, displayName, pfpUrl })
 
         const response = await fetch('/api/update-participant-profile', {
           method: 'POST',
@@ -43,14 +26,12 @@ export function useAutoUpdateProfile() {
           }),
         })
 
-        const result = await response.json()
-        console.log('[useAutoUpdateProfile] Response:', result, 'status:', response.status)
-
         if (!response.ok) {
-          console.error('[useAutoUpdateProfile] Failed:', result)
+          const result = await response.json()
+          console.error('Profile update failed:', result)
         }
       } catch (error) {
-        console.error('[useAutoUpdateProfile] Error:', error)
+        console.error('Profile update error:', error)
       }
     }
 

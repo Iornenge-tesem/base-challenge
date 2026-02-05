@@ -78,9 +78,6 @@ export default function ShowUpChallengePage() {
       const displayName = userContext?.user?.displayName || userContext?.user?.username;
       const pfpUrl = userContext?.user?.pfpUrl;
       
-      console.log('Join attempt - userContext:', userContext);
-      console.log('Sending displayName:', displayName, 'pfpUrl:', pfpUrl);
-      
       const result = await processPayment(challengeId, address, displayName, pfpUrl);
       if (result.success) {
         setHasJoined(true);

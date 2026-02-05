@@ -19,10 +19,8 @@ export function useWalletAddress() {
     const fetchUserContext = async () => {
       try {
         const context = await sdk.context
-        console.log('[useWalletAddress] Farcaster context:', context)
         setUserContext(context)
       } catch (error) {
-        console.log('[useWalletAddress] Not in Farcaster context:', error)
         setUserContext(null)
       }
     }

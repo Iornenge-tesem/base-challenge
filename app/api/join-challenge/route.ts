@@ -18,8 +18,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { walletAddress, challengeId, transactionHash, paymentMethod, referralCode, displayName, pfpUrl } = body
 
-    console.log('Join-challenge received:', { walletAddress, challengeId, displayName, pfpUrl, paymentMethod });
-
     // Validate inputs
     if (!walletAddress || !isAddress(walletAddress)) {
       return NextResponse.json(

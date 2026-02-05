@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useWalletAddress } from '@/hooks/useWalletAddress'
+import { useFarcasterProfiles } from '@/hooks/useFarcasterProfiles'
 
 interface LeaderBoardEntry {
   address: string
@@ -14,12 +16,14 @@ interface LeaderBoardProps {
 }
 
 export default function LeaderBoard({ refreshKey }: LeaderBoardProps) {
+  const { address: currentUserAddress } = useWalletAddress()
+  const { currentUserProfile } = useFarcasterProfiles()
   const [leaders, setLeaders] = useState<LeaderBoardEntry[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     fetchLeaderboard()
-  }, [refreshKey])
+  }, [refreshKey, currentUserProfile])
 
   const fetchLeaderboard = async () => {
     try {
@@ -27,12 +31,27 @@ export default function LeaderBoard({ refreshKey }: LeaderBoardProps) {
       if (response.ok) {
         const data = await response.json()
         // Transform API response to match component structure
-        const formattedLeaders = data.leaderboard.map((entry: any) => ({
+        let formattedLeaders = data.leaderboard.map((entry: any) => ({
           address: entry.address,
           displayName: entry.displayName,
           avatar: entry.avatar,
           points: entry.score || 0,
         }))
+
+        // Merge current user's Farcaster profile if they're in the leaderboard
+        if (currentUserAddress && currentUserProfile?.displayName) {
+          formattedLeaders = formattedLeaders.map((leader: LeaderBoardEntry) => {
+            if (leader.address.toLowerCase() === currentUserAddress.toLowerCase()) {
+              return {
+                ...leader,
+                displayName: currentUserProfile.displayName || currentUserProfile.username || leader.displayName,
+                avatar: currentUserProfile.pfpUrl || leader.avatar,
+              }
+            }
+            return leader
+          })
+        }
+
         setLeaders(formattedLeaders)
       }
     } catch (error) {
