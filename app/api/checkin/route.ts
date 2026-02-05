@@ -193,23 +193,42 @@ export async function GET(request: NextRequest) {
 
     const todayCheckIn = todayCheckins?.[0] || null
 
-    // Get stats - use limit(1) and order to get highest BCP row if duplicates exist
-    const { data: statsRows } = await supabase
-      .from('user_stats')
-      .select('*')
+    // Calculate BCP from actual checkins (sum of bcp_earned)
+    const { data: checkinStats } = await supabase
+      .from('checkins')
+      .select('bcp_earned, streak, check_in_date')
       .ilike('wallet_address', normalizedAddress)
-      .order('total_bcp', { ascending: false })
-      .limit(1)
+      .eq('challenge_id', 'show-up')
+      .order('check_in_date', { ascending: false })
 
-    const stats = statsRows?.[0] || null
+    let totalBcp = 0
+    let currentStreak = 0
+    let longestStreak = 0
+    let totalCheckins = 0
+
+    if (checkinStats && checkinStats.length > 0) {
+      totalBcp = checkinStats.reduce((sum, c: any) => sum + (c.bcp_earned || 0), 0)
+      currentStreak = checkinStats[0].streak || 0
+      totalCheckins = checkinStats.length
+
+      // Calculate longest streak from all checkins
+      let maxStreak = 0
+      for (const c of checkinStats) {
+        if ((c.streak || 0) > maxStreak) {
+          maxStreak = c.streak || 0
+        }
+      }
+      longestStreak = maxStreak
+    }
 
     return NextResponse.json({
       hasCheckedInToday: !!todayCheckIn,
-      stats: stats || {
-        total_bcp: 0,
-        current_streak: 0,
-        longest_streak: 0,
-        total_checkins: 0,
+      stats: {
+        wallet_address: normalizedAddress,
+        total_bcp: totalBcp,
+        current_streak: currentStreak,
+        longest_streak: longestStreak,
+        total_checkins: totalCheckins,
       },
     })
   } catch (error: any) {
