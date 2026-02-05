@@ -148,7 +148,7 @@ export async function GET(request: NextRequest) {
     const { data: todayCheckIn } = await supabase
       .from('checkins')
       .select('*')
-      .eq('wallet_address', normalizedAddress)
+      .ilike('wallet_address', normalizedAddress)
       .eq('check_in_date', today)
       .eq('challenge_id', 'show-up')
       .single()

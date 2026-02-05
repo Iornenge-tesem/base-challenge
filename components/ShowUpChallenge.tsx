@@ -26,8 +26,8 @@ export default function ShowUpChallenge() {
   const [checkInImageData, setCheckInImageData] = useState<{ shareUrl: string; imageUrl: string } | null>(null)
   const [leaderboardRefreshKey, setLeaderboardRefreshKey] = useState(0)
 
-  // Get wallet address
-  const { address } = useWalletAddress()
+  // Get wallet address and user context
+  const { address, userContext } = useWalletAddress()
 
   useEffect(() => {
     // Check if first time user
