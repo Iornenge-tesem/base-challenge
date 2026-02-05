@@ -24,16 +24,10 @@ export default function ShowUpChallenge() {
   const [avatar, setAvatar] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [checkInImageData, setCheckInImageData] = useState<{ shareUrl: string; imageUrl: string } | null>(null)
-  const [currentAddress, setCurrentAddress] = useState<string | null>(null)
+  const [leaderboardRefreshKey, setLeaderboardRefreshKey] = useState(0)
 
   // Get wallet address
   const { address } = useWalletAddress()
-
-  useEffect(() => {
-    if (address) {
-      setCurrentAddress(address)
-    }
-  }, [address])
 
   useEffect(() => {
     // Check if first time user
@@ -44,10 +38,10 @@ export default function ShowUpChallenge() {
     
     // Load user data from API
     const loadUserData = async () => {
-      if (!currentAddress) return
+      if (!address) return
       
       try {
-        const response = await fetch(`/api/checkin?wallet_address=${currentAddress}`)
+        const response = await fetch(`/api/checkin?wallet_address=${address}`)
         if (response.ok) {
           const data = await response.json()
           setHasCheckedInToday(data.hasCheckedInToday)
@@ -62,7 +56,7 @@ export default function ShowUpChallenge() {
     }
     
     loadUserData()
-  }, [currentAddress])
+  }, [address])
 
   const closeOnboarding = () => {
     setShowOnboarding(false)
@@ -70,7 +64,7 @@ export default function ShowUpChallenge() {
   }
 
   const handleCheckIn = async () => {
-    if (!currentAddress) return
+    if (!address) return
 
     try {
       // Call the real API to check in
@@ -80,7 +74,7 @@ export default function ShowUpChallenge() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          wallet_address: currentAddress,
+          wallet_address: address,
           challenge_id: 'show-up',
         }),
       })
@@ -103,6 +97,7 @@ export default function ShowUpChallenge() {
       setStreak(newStreak)
       setPoints(newPoints)
       setHasCheckedInToday(true)
+      setLeaderboardRefreshKey((prev) => prev + 1)
 
       // Auto-generate shareable image after check-in
       await generateCheckInImage(newStreak, newPoints)
@@ -120,7 +115,7 @@ export default function ShowUpChallenge() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          address: currentAddress, 
+          address: address, 
           streak: currentStreak, 
           points: currentPoints,
           username: username,
@@ -236,7 +231,7 @@ export default function ShowUpChallenge() {
           <StreakDisplay 
             streak={streak} 
             points={points}
-            address={currentAddress}
+            address={address}
           />
         )}
         
@@ -253,7 +248,7 @@ export default function ShowUpChallenge() {
         {isLoading ? (
           <LeaderBoardSkeleton />
         ) : (
-          <LeaderBoard />
+          <LeaderBoard refreshKey={leaderboardRefreshKey} />
         )}
       </div>
     </>

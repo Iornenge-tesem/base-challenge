@@ -10,13 +10,17 @@ interface LeaderBoardEntry {
   points: number
 }
 
-export default function LeaderBoard() {
+interface LeaderBoardProps {
+  refreshKey?: number
+}
+
+export default function LeaderBoard({ refreshKey }: LeaderBoardProps) {
   const [leaders, setLeaders] = useState<LeaderBoardEntry[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     fetchLeaderboard()
-  }, [])
+  }, [refreshKey])
 
   const fetchLeaderboard = async () => {
     try {
