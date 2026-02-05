@@ -56,28 +56,7 @@ export default function ShowUpChallenge() {
     }
     
     loadUserData()
-
-    // Update participant profile if they have Farcaster data
-    const updateProfile = async () => {
-      if (!address || !userContext?.user) return
-
-      try {
-        await fetch('/api/update-participant-profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            walletAddress: address,
-            displayName: userContext.user.displayName || userContext.user.username,
-            pfpUrl: userContext.user.pfpUrl,
-          }),
-        })
-      } catch (error) {
-        console.error('Error updating participant profile:', error)
-      }
-    }
-
-    updateProfile()
-  }, [address, userContext?.user])
+  }, [address])
 
   const closeOnboarding = () => {
     setShowOnboarding(false)

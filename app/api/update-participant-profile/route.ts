@@ -5,8 +5,6 @@ export async function POST(request: NextRequest) {
   try {
     const { walletAddress, displayName, pfpUrl } = await request.json()
 
-    console.log('Update profile received:', { walletAddress, displayName, pfpUrl });
-
     if (!walletAddress) {
       return NextResponse.json(
         { error: 'Wallet address required' },
@@ -16,17 +14,44 @@ export async function POST(request: NextRequest) {
 
     const normalizedAddress = walletAddress.toLowerCase()
 
-    // Update participant profile with Farcaster data
-    const { error } = await supabase
+    // First, check if user is already a participant
+    const { data: existing } = await supabase
       .from('challenge_participants')
-      .update({
-        displayname: displayName || null,
-        farcaster_pfp_url: pfpUrl || null,
-      })
+      .select('id')
       .eq('wallet_address', normalizedAddress)
       .eq('challenge_id', 'show-up')
+      .single()
 
-    if (error) throw error
+    if (existing) {
+      // User already joined - update their profile
+      const { error } = await supabase
+        .from('challenge_participants')
+        .update({
+          displayname: displayName || null,
+          farcaster_pfp_url: pfpUrl || null,
+        })
+        .eq('wallet_address', normalizedAddress)
+        .eq('challenge_id', 'show-up')
+
+      if (error) throw error
+    } else {
+      // User hasn't joined yet - insert a new record with their profile
+      // This allows profile to be added before payment
+      const { error } = await supabase
+        .from('challenge_participants')
+        .insert({
+          wallet_address: normalizedAddress,
+          challenge_id: 'show-up',
+          displayname: displayName || null,
+          farcaster_pfp_url: pfpUrl || null,
+          status: 'pending', // Mark as pending until they pay
+        })
+
+      if (error && error.code !== '23505') {
+        // 23505 is unique constraint - they already exist
+        throw error
+      }
+    }
 
     return NextResponse.json({
       success: true,
