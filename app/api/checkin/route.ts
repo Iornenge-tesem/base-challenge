@@ -62,12 +62,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Get current stats - check for any case variant
-    let { data: stats } = await supabase
+    const { data: statsRows } = await supabase
       .from('user_stats')
       .select('*')
       .ilike('wallet_address', normalizedAddress)
+      .order('total_bcp', { ascending: false })
       .limit(1)
-      .maybeSingle()
+
+    let stats = statsRows?.[0] || null
 
     // If stats exist with different case, normalize the wallet address
     if (stats && stats.wallet_address !== normalizedAddress) {
@@ -181,20 +183,25 @@ export async function GET(request: NextRequest) {
     const today = new Date().toISOString().split('T')[0]
 
     // Check if checked in today
-    const { data: todayCheckIn } = await supabase
+    const { data: todayCheckins } = await supabase
       .from('checkins')
       .select('*')
       .ilike('wallet_address', normalizedAddress)
       .eq('check_in_date', today)
       .eq('challenge_id', 'show-up')
-      .single()
+      .limit(1)
 
-    // Get stats
-    const { data: stats } = await supabase
+    const todayCheckIn = todayCheckins?.[0] || null
+
+    // Get stats - use limit(1) and order to get highest BCP row if duplicates exist
+    const { data: statsRows } = await supabase
       .from('user_stats')
       .select('*')
       .ilike('wallet_address', normalizedAddress)
-      .single()
+      .order('total_bcp', { ascending: false })
+      .limit(1)
+
+    const stats = statsRows?.[0] || null
 
     return NextResponse.json({
       hasCheckedInToday: !!todayCheckIn,
