@@ -49,10 +49,10 @@ export async function POST(request: NextRequest) {
     const { data: existingCheckIn } = await supabase
       .from('checkins')
       .select('*')
-      .eq('wallet_address', normalizedAddress)
+      .ilike('wallet_address', normalizedAddress)
       .eq('check_in_date', today)
       .eq('challenge_id', challenge_id)
-      .single()
+      .maybeSingle()
 
     if (existingCheckIn) {
       return NextResponse.json(
@@ -61,12 +61,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get current stats
+    // Get current stats - check for any case variant
     let { data: stats } = await supabase
       .from('user_stats')
       .select('*')
       .ilike('wallet_address', normalizedAddress)
-      .single()
+      .limit(1)
+      .maybeSingle()
+
+    // If stats exist with different case, normalize the wallet address
+    if (stats && stats.wallet_address !== normalizedAddress) {
+      await supabase
+        .from('user_stats')
+        .update({ wallet_address: normalizedAddress })
+        .eq('wallet_address', stats.wallet_address)
+    }
 
     // Calculate new streak
     const yesterday = new Date()
@@ -100,19 +109,46 @@ export async function POST(request: NextRequest) {
     const newTotalCheckins = (stats?.total_checkins || 0) + 1
     const newLongestStreak = Math.max(stats?.longest_streak || 0, newStreak)
 
-    const { data: updatedStats, error: statsError } = await supabase
-      .from('user_stats')
-      .upsert({
-        wallet_address: normalizedAddress,
-        total_bcp: newTotalBcp,
-        current_streak: newStreak,
-        longest_streak: newLongestStreak,
-        total_checkins: newTotalCheckins,
-        last_checkin_date: today,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'wallet_address' })
-      .select()
-      .single()
+    let updatedStats
+    let statsError
+
+    if (stats) {
+      // UPDATE existing row by id
+      const result = await supabase
+        .from('user_stats')
+        .update({
+          total_bcp: newTotalBcp,
+          current_streak: newStreak,
+          longest_streak: newLongestStreak,
+          total_checkins: newTotalCheckins,
+          last_checkin_date: today,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', stats.id)
+        .select()
+        .single()
+      
+      updatedStats = result.data
+      statsError = result.error
+    } else {
+      // INSERT new row
+      const result = await supabase
+        .from('user_stats')
+        .insert({
+          wallet_address: normalizedAddress,
+          total_bcp: newTotalBcp,
+          current_streak: newStreak,
+          longest_streak: newLongestStreak,
+          total_checkins: newTotalCheckins,
+          last_checkin_date: today,
+          updated_at: new Date().toISOString(),
+        })
+        .select()
+        .single()
+      
+      updatedStats = result.data
+      statsError = result.error
+    }
 
     if (statsError) throw statsError
 
