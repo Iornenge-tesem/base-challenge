@@ -13,7 +13,7 @@ export default function ShowUpChallengePage() {
   const [participantCount, setParticipantCount] = useState(0);
   const [isLoadingParticipants, setIsLoadingParticipants] = useState(true);
   const [isCheckingJoined, setIsCheckingJoined] = useState(false);
-  const { address, isConnected, connectWallet } = useWalletAddress();
+  const { address, isConnected, connectWallet, userContext } = useWalletAddress();
   const { processPayment, isProcessing, error, entryFee } = useBasePayment();
   const challengeId = 'show-up';
 
@@ -75,7 +75,10 @@ export default function ShowUpChallengePage() {
     }
 
     try {
-      const result = await processPayment(challengeId, address);
+      const displayName = userContext?.user?.displayName || userContext?.user?.username;
+      const pfpUrl = userContext?.user?.pfpUrl;
+      
+      const result = await processPayment(challengeId, address, displayName, pfpUrl);
       if (result.success) {
         setHasJoined(true);
       }

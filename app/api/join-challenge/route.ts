@@ -16,7 +16,7 @@ const ENTRY_FEE_UNITS = 300000n // 0.3 USDC with 6 decimals
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { walletAddress, challengeId, transactionHash, paymentMethod, referralCode } = body
+    const { walletAddress, challengeId, transactionHash, paymentMethod, referralCode, displayName, pfpUrl } = body
 
     // Validate inputs
     if (!walletAddress || !isAddress(walletAddress)) {
@@ -52,6 +52,8 @@ export async function POST(request: NextRequest) {
           transaction_hash: transactionHash, // Store payment ID as transaction_hash
           status: 'active',
           referral_code: referralCode || null, // Store referral code if present
+          displayName: displayName || null,
+          pfpUrl: pfpUrl || null,
         })
 
       if (insertError) {

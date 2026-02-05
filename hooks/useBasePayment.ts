@@ -10,7 +10,7 @@ export function useBasePayment() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const processPayment = async (challengeId: string, userAddress: string) => {
+  const processPayment = async (challengeId: string, userAddress: string, displayName?: string, pfpUrl?: string) => {
     setIsProcessing(true)
     setError(null)
 
@@ -56,6 +56,8 @@ export function useBasePayment() {
               transactionHash: payment.id,
               paymentMethod: 'base-account',
               referralCode: referralCode || undefined,
+              displayName: displayName || undefined,
+              pfpUrl: pfpUrl || undefined,
             }),
           })
 
