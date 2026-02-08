@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
           status: 'active',
           referral_code: referralCode || null, // Store referral code if present
           displayname: displayName || null,
-          farcaster_pfp_url: pfpUrl || null,
+          pfpurl: pfpUrl || null,
         })
 
       if (insertError) {

@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     if (displayName || pfpUrl) {
       const updateData: any = {}
       if (displayName) updateData.displayname = displayName
-      if (pfpUrl) updateData.farcaster_pfp_url = pfpUrl
+      if (pfpUrl) updateData.pfpurl = pfpUrl
       
       await supabase
         .from('challenge_participants')

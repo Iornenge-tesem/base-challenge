@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
         .from('challenge_participants')
         .update({
           displayname: displayName || null,
-          farcaster_pfp_url: pfpUrl || null,
+          pfpurl: pfpUrl || null,
         })
         .eq('wallet_address', normalizedAddress)
         .eq('challenge_id', 'show-up')
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
           wallet_address: normalizedAddress,
           challenge_id: 'show-up',
           displayname: displayName || null,
-          farcaster_pfp_url: pfpUrl || null,
+          pfpurl: pfpUrl || null,
           status: 'pending', // Mark as pending until they pay
         })
 
