@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { sdk } from '@farcaster/miniapp-sdk'
 
 export default function SDKInitializer({ children }: { children: React.ReactNode }) {
   const [isReady, setIsReady] = useState(false)
@@ -11,6 +10,8 @@ export default function SDKInitializer({ children }: { children: React.ReactNode
 
     const initializeSDK = async () => {
       try {
+        // Dynamic import to avoid SSR issues
+        const { sdk } = await import('@farcaster/miniapp-sdk')
         await sdk.actions.ready()
         if (isMounted) {
           setIsReady(true)
@@ -23,17 +24,17 @@ export default function SDKInitializer({ children }: { children: React.ReactNode
       }
     }
 
-    // Use requestAnimationFrame to ensure DOM is ready
-    const frame = requestAnimationFrame(() => {
+    // Delay initialization to ensure we're fully mounted
+    const timer = setTimeout(() => {
       initializeSDK()
-    })
+    }, 50)
 
     return () => {
       isMounted = false
-      cancelAnimationFrame(frame)
+      clearTimeout(timer)
     }
   }, [])
 
-  // Always render children - don't block on SDK
+  // Always render children immediately - don't wait for SDK
   return <>{children}</>
 }

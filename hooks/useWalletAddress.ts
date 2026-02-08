@@ -2,7 +2,6 @@
 
 import { useAccount, useConnect } from 'wagmi'
 import { useEffect, useState } from 'react'
-import { sdk } from '@farcaster/miniapp-sdk'
 
 export function useWalletAddress() {
   const { address, isConnected } = useAccount()
@@ -15,12 +14,15 @@ export function useWalletAddress() {
     setIsMounted(true)
   }, [])
 
-  // Initialize SDK first, then fetch user data
+  // Initialize SDK and fetch user data with dynamic import
   useEffect(() => {
     if (!isMounted) return
 
     const initSDK = async () => {
       try {
+        // Dynamic import to avoid SSR issues
+        const { sdk } = await import('@farcaster/miniapp-sdk')
+        
         // Wait for SDK to be ready
         await sdk.actions.ready()
         setIsSDKReady(true)

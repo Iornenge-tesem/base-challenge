@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { sdk } from '@farcaster/miniapp-sdk'
 
 export interface FarcasterProfile {
   displayName?: string
@@ -19,6 +18,9 @@ export function useFarcasterProfiles() {
     
     const fetchCurrentUserProfile = async () => {
       try {
+        // Dynamic import to avoid SSR issues
+        const { sdk } = await import('@farcaster/miniapp-sdk')
+        
         // Wait for SDK to be ready first
         await sdk.actions.ready()
         
