@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { rateLimit } from '@/lib/rateLimit'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function POST(request: NextRequest) {
   try {
     const { wallet_address, challenge_id = 'show-up', displayName, pfpUrl } = await request.json()
@@ -29,14 +32,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Update participant profile if Farcaster data is available
     if (displayName || pfpUrl) {
+      const updateData: any = {}
+      if (displayName) updateData.displayname = displayName
+      if (pfpUrl) updateData.farcaster_pfp_url = pfpUrl
+      
       await supabase
         .from('challenge_participants')
-        .update({
-          displayname: displayName || null,
-          farcaster_pfp_url: pfpUrl || null,
-        })
-        .eq('wallet_address', normalizedAddress)
+        .update(updateData)
+        .ilike('wallet_address', normalizedAddress)
         .eq('challenge_id', challenge_id)
     }
 

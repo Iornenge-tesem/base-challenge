@@ -27,7 +27,11 @@ export default function LeaderBoard({ refreshKey }: LeaderBoardProps) {
 
   const fetchLeaderboard = async () => {
     try {
-      const response = await fetch('/api/leaderboard?challenge_id=show-up&limit=5')
+      // Add cache-busting timestamp to force fresh data
+      const timestamp = Date.now()
+      const response = await fetch(`/api/leaderboard?challenge_id=show-up&limit=5&t=${timestamp}`, {
+        cache: 'no-store',
+      })
       if (response.ok) {
         const data = await response.json()
         // Transform API response to match component structure

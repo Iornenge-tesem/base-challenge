@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -21,18 +24,21 @@ export async function GET(request: NextRequest) {
     let participantMap = new Map<string, { displayName?: string; pfpUrl?: string }>()
 
     if (walletAddresses.length > 0) {
+      // Query each wallet address with case-insensitive matching
       const { data: participants } = await supabase
         .from('challenge_participants')
         .select('wallet_address, displayname, farcaster_pfp_url')
         .eq('challenge_id', challenge_id)
-        .in('wallet_address', walletAddresses)
 
       if (participants) {
         for (const p of participants) {
-          participantMap.set(p.wallet_address.toLowerCase(), {
-            displayName: p.displayname,
-            pfpUrl: p.farcaster_pfp_url,
-          })
+          // Store with lowercase key for consistent matching
+          if (walletAddresses.includes(p.wallet_address.toLowerCase())) {
+            participantMap.set(p.wallet_address.toLowerCase(), {
+              displayName: p.displayname,
+              pfpUrl: p.farcaster_pfp_url,
+            })
+          }
         }
       }
     }
