@@ -10,8 +10,6 @@ interface UserProfileProps {
 }
 
 export default function UserProfile({ address, username, avatar, showThemeToggle = false }: UserProfileProps) {
-  if (!address) return null
-
   const [isDark, setIsDark] = useState(false)
   const [hasManualPreference, setHasManualPreference] = useState(false)
 
@@ -67,6 +65,8 @@ export default function UserProfile({ address, username, avatar, showThemeToggle
       window.removeEventListener('storage', handleStorage)
     }
   }, [])
+
+  if (!address) return null
 
   const toggleTheme = () => {
     const nextIsDark = !isDark

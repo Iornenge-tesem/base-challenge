@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { sdk } from '@farcaster/miniapp-sdk'
 
 export interface FarcasterUser {
   fid: number
@@ -18,6 +17,8 @@ export function useFarcasterUser() {
   useEffect(() => {
     const loadUserData = async () => {
       try {
+        // Dynamic import to avoid SSR crash - SDK accesses window on import
+        const { sdk } = await import('@farcaster/miniapp-sdk')
         const miniAppStatus = await sdk.isInMiniApp()
         if (miniAppStatus) {
           const context = await sdk.context

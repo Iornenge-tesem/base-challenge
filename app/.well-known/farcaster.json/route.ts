@@ -17,6 +17,14 @@ export async function GET() {
       payload: 'eyJkb21haW4iOiJiYXNlLWNoYWxsZW5nZS1pb3RhLnZlcmNlbC5hcHAifQ',
       signature: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEFnttapLBiaFCy3T-rausyVsDoGENy4eDFPnvdu3yzSTU27lyOEM9QsbCScxtq7QZkCQ_-tIfwcO7Wfumd2d07AGwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
     },
+    frame: {
+      version: '1',
+      name: 'Base Challenge',
+      homeUrl: baseUrl,
+      iconUrl: `${baseUrl}/icon.png`,
+      splashImageUrl: `${baseUrl}/icon.png`,
+      splashBackgroundColor: '#0a2540',
+    },
     miniapp: {
       version: '1',
       name: 'Base Challenge',
