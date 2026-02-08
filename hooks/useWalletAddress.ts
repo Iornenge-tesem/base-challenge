@@ -17,17 +17,25 @@ export function useWalletAddress() {
   useEffect(() => {
     const fetchUserContext = async () => {
       try {
+        // Check if we're in browser
+        if (typeof window === 'undefined') return
+        
         // Dynamic import to avoid SSR issues
         const { sdk } = await import('@farcaster/miniapp-sdk')
         const context = await sdk.context
         setUserContext(context)
       } catch (error) {
+        // Not in Farcaster context - this is normal
         setUserContext(null)
       }
     }
 
     if (isMounted) {
-      fetchUserContext()
+      // Small delay to ensure SDK is ready
+      const timer = setTimeout(() => {
+        fetchUserContext()
+      }, 200)
+      return () => clearTimeout(timer)
     }
   }, [isMounted])
 

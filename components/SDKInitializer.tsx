@@ -3,36 +3,44 @@
 import { useEffect, useState } from 'react'
 
 export default function SDKInitializer({ children }: { children: React.ReactNode }) {
-  const [isReady, setIsReady] = useState(false)
+  const [hasCalledReady, setHasCalledReady] = useState(false)
 
   useEffect(() => {
+    // Only call once
+    if (hasCalledReady) return
+    
     let isMounted = true
 
     const callReady = async () => {
       try {
+        // Check if we're in a Farcaster context first
+        if (typeof window === 'undefined') return
+        
         // Dynamic import to avoid SSR issues
         const { sdk } = await import('@farcaster/miniapp-sdk')
-        await sdk.actions.ready()
-        if (isMounted) {
+        
+        // Only call ready if we haven't already
+        if (isMounted && !hasCalledReady) {
+          await sdk.actions.ready()
+          setHasCalledReady(true)
           console.log('✅ SDK ready() called successfully')
-          setIsReady(true)
         }
       } catch (error) {
-        if (isMounted) {
-          console.log('Running outside Base app environment')
-          setIsReady(true) // Still render the app
-        }
+        // Silently handle - we're probably not in Base app environment
+        console.log('Not in Base app environment or SDK error:', error)
       }
     }
 
-    // Call immediately
-    void callReady()
+    // Small delay to ensure everything is mounted
+    const timer = setTimeout(() => {
+      void callReady()
+    }, 100)
 
     return () => {
       isMounted = false
+      clearTimeout(timer)
     }
-  }, [])
+  }, [hasCalledReady])
 
-  // Always render children - don't block on SDK ready
   return <>{children}</>
 }
