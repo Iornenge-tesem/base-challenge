@@ -6,6 +6,7 @@ import Script from "next/script";
 import BottomNav from "@/components/BottomNav";
 import TopRightAvatar from "@/components/TopRightAvatar";
 import ReferralTracker from "@/components/ReferralTracker";
+import SDKInitializer from "@/components/SDKInitializer";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -48,10 +49,12 @@ export default function RootLayout({
         className={`${inter.className} bg-primary-light-mode-blue dark:bg-primary-dark-blue text-primary-dark-blue dark:text-primary-white`}
       >
         <Providers>
-          <ReferralTracker />
-          <TopRightAvatar />
-          {children}
-          <BottomNav />
+          <SDKInitializer>
+            <ReferralTracker />
+            <TopRightAvatar />
+            {children}
+            <BottomNav />
+          </SDKInitializer>
         </Providers>
         <SpeedInsights />
       </body>

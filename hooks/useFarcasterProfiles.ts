@@ -14,46 +14,27 @@ export function useFarcasterProfiles() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    let isMounted = true
-    
     const fetchCurrentUserProfile = async () => {
       try {
         // Dynamic import to avoid SSR issues
         const { sdk } = await import('@farcaster/miniapp-sdk')
-        
-        // Wait for SDK to be ready first
-        await sdk.actions.ready()
-        
         const context = await sdk.context
-        if (!isMounted) return
-        
-        if (context?.user) {
-          setCurrentUserProfile({
-            displayName: context.user.displayName,
-            pfpUrl: context.user.pfpUrl,
-            username: context.user.username,
-            fid: context.user.fid,
-          })
-        }
+        const user = context.user
+
+        setCurrentUserProfile({
+          displayName: user.displayName,
+          pfpUrl: user.pfpUrl,
+          username: user.username,
+          fid: user.fid,
+        })
       } catch (error) {
-        // Not in Farcaster environment
-        if (isMounted) {
-          setCurrentUserProfile(null)
-        }
+        setCurrentUserProfile(null)
       } finally {
-        if (isMounted) {
-          setIsLoading(false)
-        }
+        setIsLoading(false)
       }
     }
 
-    // Delay slightly to ensure DOM is ready
-    const timer = setTimeout(fetchCurrentUserProfile, 100)
-    
-    return () => {
-      isMounted = false
-      clearTimeout(timer)
-    }
+    fetchCurrentUserProfile()
   }, [])
 
   return {

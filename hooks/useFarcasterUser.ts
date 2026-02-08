@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { sdk } from '@farcaster/miniapp-sdk'
 
 export interface FarcasterUser {
   fid: number
@@ -15,20 +16,11 @@ export function useFarcasterUser() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    let isMounted = true
-    
     const loadUserData = async () => {
       try {
-        // Dynamic import to avoid SSR issues
-        const { sdk } = await import('@farcaster/miniapp-sdk')
-        
         const miniAppStatus = await sdk.isInMiniApp()
-        if (!isMounted) return
-        
         if (miniAppStatus) {
           const context = await sdk.context
-          if (!isMounted) return
-          
           if (context?.user) {
             setUser({
               fid: context.user.fid,
@@ -39,24 +31,14 @@ export function useFarcasterUser() {
           }
         }
       } catch (err) {
-        // Not in mini app or SDK error - that's OK
-        if (isMounted) {
-          setError(err instanceof Error ? err.message : 'Failed to load user data')
-        }
+        console.error('Error loading Farcaster user data:', err)
+        setError(err instanceof Error ? err.message : 'Failed to load user data')
       } finally {
-        if (isMounted) {
-          setIsLoading(false)
-        }
+        setIsLoading(false)
       }
     }
 
-    // Delay to ensure DOM is ready
-    const timer = setTimeout(loadUserData, 100)
-    
-    return () => {
-      isMounted = false
-      clearTimeout(timer)
-    }
+    loadUserData()
   }, [])
 
   return { user, isLoading, error }

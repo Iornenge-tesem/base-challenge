@@ -8,40 +8,27 @@ export function useWalletAddress() {
   const { connect, connectors } = useConnect()
   const [isMounted, setIsMounted] = useState(false)
   const [userContext, setUserContext] = useState<any>(null)
-  const [isSDKReady, setIsSDKReady] = useState(false)
 
   useEffect(() => {
     setIsMounted(true)
   }, [])
 
-  // Initialize SDK and fetch user data with dynamic import
+  // Fetch Farcaster user data from SDK dynamically
   useEffect(() => {
-    if (!isMounted) return
-
-    const initSDK = async () => {
+    const fetchUserContext = async () => {
       try {
         // Dynamic import to avoid SSR issues
         const { sdk } = await import('@farcaster/miniapp-sdk')
-        
-        // Wait for SDK to be ready
-        await sdk.actions.ready()
-        setIsSDKReady(true)
-        
-        // Now fetch context
         const context = await sdk.context
-        if (context?.user) {
-          setUserContext(context)
-        }
+        setUserContext(context)
       } catch (error) {
-        // Not in Farcaster environment or SDK not available
-        setIsSDKReady(false)
         setUserContext(null)
       }
     }
 
-    // Delay slightly to ensure DOM is ready
-    const timer = setTimeout(initSDK, 100)
-    return () => clearTimeout(timer)
+    if (isMounted) {
+      fetchUserContext()
+    }
   }, [isMounted])
 
   const connectWallet = async () => {
@@ -61,6 +48,5 @@ export function useWalletAddress() {
     isConnected: isMounted ? isConnected : false,
     connectWallet,
     userContext,
-    isSDKReady,
   }
 }

@@ -6,7 +6,6 @@ import { WagmiProvider } from 'wagmi'
 import { OnchainKitProvider } from '@coinbase/onchainkit'
 import { config } from '@/lib/wagmi'
 import SDKInitializer from '@/components/SDKInitializer'
-import ErrorBoundary from '@/components/ErrorBoundary'
 import { base } from 'wagmi/chains'
 
 const queryClient = new QueryClient()
@@ -70,20 +69,18 @@ export function Providers({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <ErrorBoundary>
-      <SDKInitializer>
-        <WagmiProvider config={config}>
-          <OnchainKitProvider
-            chain={base}
-            apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
-            miniKit={{ enabled: true, autoConnect: false }}
-          >
-            <QueryClientProvider client={queryClient}>
-              {children}
-            </QueryClientProvider>
-          </OnchainKitProvider>
-        </WagmiProvider>
-      </SDKInitializer>
-    </ErrorBoundary>
+    <SDKInitializer>
+      <WagmiProvider config={config}>
+        <OnchainKitProvider
+          chain={base}
+          apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
+          miniKit={{ enabled: true, autoConnect: false }}
+        >
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        </OnchainKitProvider>
+      </WagmiProvider>
+    </SDKInitializer>
   )
 }
