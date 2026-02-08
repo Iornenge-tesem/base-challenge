@@ -1,35 +1,39 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { sdk } from '@farcaster/miniapp-sdk'
 
 export default function SDKInitializer({ children }: { children: React.ReactNode }) {
+  const [isReady, setIsReady] = useState(false)
+
   useEffect(() => {
     let isMounted = true
 
-    const callReady = async () => {
+    const initializeSDK = async () => {
       try {
-        // Ensure the SDK is fully available after mount
         await sdk.actions.ready()
         if (isMounted) {
-          console.log('✅ SDK ready() called successfully')
+          setIsReady(true)
         }
       } catch (error) {
+        // Not in Farcaster environment - that's OK, still render
         if (isMounted) {
-          console.log('Running outside Base app environment')
+          setIsReady(true)
         }
       }
     }
 
-    // Defer to next tick to avoid race conditions
-    setTimeout(() => {
-      void callReady()
-    }, 0)
+    // Use requestAnimationFrame to ensure DOM is ready
+    const frame = requestAnimationFrame(() => {
+      initializeSDK()
+    })
 
     return () => {
       isMounted = false
+      cancelAnimationFrame(frame)
     }
   }, [])
 
+  // Always render children - don't block on SDK
   return <>{children}</>
 }
