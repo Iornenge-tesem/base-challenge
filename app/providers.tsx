@@ -1,17 +1,40 @@
 'use client'
 
-import { ReactNode, useEffect } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiProvider } from 'wagmi'
 import { OnchainKitProvider } from '@coinbase/onchainkit'
 import { config } from '@/lib/wagmi'
-import SDKInitializer from '@/components/SDKInitializer'
 import { base } from 'wagmi/chains'
 
 const queryClient = new QueryClient()
 
 export function Providers({ children }: { children: ReactNode }) {
+  const [isReady, setIsReady] = useState(false)
+
+  // Call SDK ready on mount - this tells Base app to show our content
   useEffect(() => {
+    const initSDK = async () => {
+      try {
+        if (typeof window !== 'undefined') {
+          const { sdk } = await import('@farcaster/miniapp-sdk')
+          await sdk.actions.ready()
+          console.log('✅ SDK ready() called')
+        }
+      } catch (error) {
+        console.log('Not in Base app environment')
+      } finally {
+        setIsReady(true)
+      }
+    }
+    
+    initSDK()
+  }, [])
+
+  // Theme handling
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    
     const media = window.matchMedia('(prefers-color-scheme: dark)')
 
     const applyTheme = (isDark: boolean) => {
@@ -69,18 +92,16 @@ export function Providers({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <SDKInitializer>
-      <WagmiProvider config={config}>
-        <OnchainKitProvider
-          chain={base}
-          apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
-          miniKit={{ enabled: true, autoConnect: false }}
-        >
-          <QueryClientProvider client={queryClient}>
-            {children}
-          </QueryClientProvider>
-        </OnchainKitProvider>
-      </WagmiProvider>
-    </SDKInitializer>
+    <WagmiProvider config={config}>
+      <OnchainKitProvider
+        chain={base}
+        apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
+        miniKit={{ enabled: true, autoConnect: false }}
+      >
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      </OnchainKitProvider>
+    </WagmiProvider>
   )
 }
