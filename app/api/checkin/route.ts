@@ -9,6 +9,8 @@ export async function POST(request: NextRequest) {
   try {
     const { wallet_address, challenge_id = 'show-up', displayName, pfpUrl } = await request.json()
 
+    console.log('CHECK-IN API DEBUG:', { wallet_address, displayName, pfpUrl })
+
     if (!wallet_address) {
       return NextResponse.json({ error: 'Wallet address required' }, { status: 400 })
     }
@@ -38,11 +40,18 @@ export async function POST(request: NextRequest) {
       if (displayName) updateData.displayname = displayName
       if (pfpUrl) updateData.pfpurl = pfpUrl
       
-      await supabase
+      console.log('UPDATING PROFILE:', { normalizedAddress, updateData })
+      
+      const { data: updateResult, error: updateError } = await supabase
         .from('challenge_participants')
         .update(updateData)
         .ilike('wallet_address', normalizedAddress)
         .eq('challenge_id', challenge_id)
+        .select()
+      
+      console.log('UPDATE RESULT:', { updateResult, updateError })
+    } else {
+      console.log('NO PROFILE DATA TO UPDATE')
     }
 
     // Rate limiting: 10 requests per hour per wallet

@@ -70,6 +70,14 @@ export default function ShowUpChallenge() {
       const displayName = userContext?.user?.displayName || userContext?.user?.username
       const pfpUrl = userContext?.user?.pfpUrl
 
+      console.log('CHECK-IN DEBUG:', {
+        hasUserContext: !!userContext,
+        hasUser: !!userContext?.user,
+        displayName,
+        pfpUrl,
+        fullUserContext: userContext
+      })
+
       // Call the real API to check in
       const response = await fetch('/api/checkin', {
         method: 'POST',
