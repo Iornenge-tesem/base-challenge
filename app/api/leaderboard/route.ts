@@ -10,21 +10,37 @@ export async function GET(request: NextRequest) {
     const challenge_id = searchParams.get('challenge_id') || 'show-up'
     const limit = parseInt(searchParams.get('limit') || '50')
 
-    // Get top users by BCP
-    const { data, error } = await supabase
-      .from('user_stats')
-      .select('wallet_address, total_bcp, current_streak, longest_streak, total_checkins')
-      .order('total_bcp', { ascending: false })
-      .limit(limit)
+    // Get all checkins and calculate BCP totals directly from checkins table
+    const { data: checkins, error } = await supabase
+      .from('checkins')
+      .select('wallet_address, bcp_earned, streak')
+      .eq('challenge_id', challenge_id)
 
     if (error) throw error
 
+    // Aggregate BCP by wallet address
+    const walletStats = new Map<string, { total_bcp: number; current_streak: number }>()
+    
+    for (const checkin of checkins || []) {
+      const addr = checkin.wallet_address.toLowerCase()
+      const existing = walletStats.get(addr) || { total_bcp: 0, current_streak: 0 }
+      walletStats.set(addr, {
+        total_bcp: existing.total_bcp + (checkin.bcp_earned || 0),
+        current_streak: Math.max(existing.current_streak, checkin.streak || 0),
+      })
+    }
+
+    // Convert to array and sort by total_bcp
+    const sortedStats = Array.from(walletStats.entries())
+      .map(([wallet_address, stats]) => ({ wallet_address, ...stats }))
+      .sort((a, b) => b.total_bcp - a.total_bcp)
+      .slice(0, limit)
+
     // Get display names and avatars for these users
-    const walletAddresses = data.map((s: any) => s.wallet_address.toLowerCase())
+    const walletAddresses = sortedStats.map(s => s.wallet_address)
     let participantMap = new Map<string, { displayName?: string; pfpUrl?: string }>()
 
     if (walletAddresses.length > 0) {
-      // Query each wallet address with case-insensitive matching
       const { data: participants } = await supabase
         .from('challenge_participants')
         .select('wallet_address, displayname, farcaster_pfp_url')
@@ -32,7 +48,6 @@ export async function GET(request: NextRequest) {
 
       if (participants) {
         for (const p of participants) {
-          // Store with lowercase key for consistent matching
           if (walletAddresses.includes(p.wallet_address.toLowerCase())) {
             participantMap.set(p.wallet_address.toLowerCase(), {
               displayName: p.displayname,
@@ -44,7 +59,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Format for leaderboard
-    const leaderboard = data.map((entry: any, index: number) => {
+    const leaderboard = sortedStats.map((entry, index) => {
       const info = participantMap.get(entry.wallet_address.toLowerCase())
       return {
         rank: index + 1,
