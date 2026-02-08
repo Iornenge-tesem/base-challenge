@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useEffect } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiProvider } from 'wagmi'
 import { OnchainKitProvider } from '@coinbase/onchainkit'
@@ -9,28 +9,20 @@ import { base } from 'wagmi/chains'
 
 const queryClient = new QueryClient()
 
+// Call SDK ready immediately when module loads (before React renders)
+if (typeof window !== 'undefined') {
+  import('@farcaster/miniapp-sdk').then(({ sdk }) => {
+    sdk.actions.ready().then(() => {
+      console.log('✅ SDK ready() called successfully')
+    }).catch((error) => {
+      console.log('SDK ready error:', error)
+    })
+  }).catch((error) => {
+    console.log('Not in Base app environment:', error)
+  })
+}
+
 export function Providers({ children }: { children: ReactNode }) {
-  const [isReady, setIsReady] = useState(false)
-
-  // Call SDK ready on mount - this tells Base app to show our content
-  useEffect(() => {
-    const initSDK = async () => {
-      try {
-        if (typeof window !== 'undefined') {
-          const { sdk } = await import('@farcaster/miniapp-sdk')
-          await sdk.actions.ready()
-          console.log('✅ SDK ready() called')
-        }
-      } catch (error) {
-        console.log('Not in Base app environment')
-      } finally {
-        setIsReady(true)
-      }
-    }
-    
-    initSDK()
-  }, [])
-
   // Theme handling
   useEffect(() => {
     if (typeof window === 'undefined') return
