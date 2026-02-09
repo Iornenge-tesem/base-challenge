@@ -1,25 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-
+// Simple test page - SDK ready() is called in providers.tsx
 export default function Home() {
-  const [status, setStatus] = useState('Loading...')
-
-  useEffect(() => {
-    const init = async () => {
-      try {
-        setStatus('Importing SDK...')
-        const { sdk } = await import('@farcaster/miniapp-sdk')
-        setStatus('Calling ready()...')
-        await sdk.actions.ready()
-        setStatus('SUCCESS - App is ready!')
-      } catch (e) {
-        setStatus(`Error: ${e instanceof Error ? e.message : String(e)}`)
-      }
-    }
-    init()
-  }, [])
-
   return (
     <div style={{
       minHeight: '100vh',
@@ -35,7 +17,7 @@ export default function Home() {
     }}>
       <div>
         <h1 style={{ marginBottom: '20px' }}>Base Challenge</h1>
-        <p>{status}</p>
+        <p>App loaded successfully!</p>
       </div>
     </div>
   )
