@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "Base Challenge",
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body style={{ margin: 0, padding: 0 }}>
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );
