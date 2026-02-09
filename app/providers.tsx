@@ -9,21 +9,22 @@ import { base } from 'wagmi/chains'
 
 const queryClient = new QueryClient()
 
-export function Providers({ children }: { children: ReactNode }) {
-  // Call SDK ready() as per Base documentation
-  useEffect(() => {
-    const callSdkReady = async () => {
-      try {
-        const { sdk } = await import('@farcaster/miniapp-sdk')
-        await sdk.actions.ready()
-        console.log('✅ SDK ready() called successfully')
-      } catch (error) {
-        console.log('Not in Base app environment:', error)
-      }
+// Call SDK ready IMMEDIATELY at module load - before React renders
+// This is critical to dismiss the splash screen
+if (typeof window !== 'undefined') {
+  // Use a self-executing async function
+  (async () => {
+    try {
+      const { sdk } = await import('@farcaster/miniapp-sdk')
+      await sdk.actions.ready()
+      console.log('✅ SDK ready() called at module load')
+    } catch (error) {
+      console.log('SDK ready error (not in mini app?):', error)
     }
-    callSdkReady()
-  }, [])
+  })()
+}
 
+export function Providers({ children }: { children: ReactNode }) {
   // Add Eruda for debugging in production (remove after fixing)
   useEffect(() => {
     if (typeof window !== 'undefined') {

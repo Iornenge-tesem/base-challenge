@@ -26,13 +26,11 @@ const nextConfig = {
       {
         source: '/(.*)',
         headers: [
-          {
-            key: 'X-Frame-Options',
-            value: 'ALLOWALL',
-          },
+          // Remove X-Frame-Options entirely - use CSP frame-ancestors instead
+          // X-Frame-Options: ALLOWALL is not a valid value
           {
             key: 'Content-Security-Policy',
-            value: "frame-ancestors 'self' https://*.farcaster.xyz https://*.warpcast.com https://*.base.org https://base-org.github.io https://base.org *;",
+            value: "frame-ancestors 'self' https://*.farcaster.xyz https://*.warpcast.com https://*.base.org https://base.org https://base.dev https://www.base.dev https://base-org.github.io *;",
           },
         ],
       },
