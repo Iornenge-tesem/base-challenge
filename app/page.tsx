@@ -1,5 +1,4 @@
-'use client'
-
+// Server Component - no JavaScript
 export default function Home() {
   return (
     <div style={{
@@ -7,13 +6,12 @@ export default function Home() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: '#0a2540',
-      color: 'white',
-      fontFamily: 'system-ui, sans-serif'
+      textAlign: 'center',
+      padding: '20px'
     }}>
-      <div style={{ textAlign: 'center' }}>
-        <h1>Base Challenge</h1>
-        <p>App loaded successfully</p>
+      <div>
+        <h1 style={{ fontSize: '32px', marginBottom: '16px' }}>Base Challenge</h1>
+        <p style={{ fontSize: '18px' }}>Static page - no JS</p>
       </div>
     </div>
   )
