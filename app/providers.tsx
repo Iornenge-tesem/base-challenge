@@ -3,27 +3,38 @@
 import { ReactNode, useEffect } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiProvider } from 'wagmi'
-import { OnchainKitProvider } from '@coinbase/onchainkit'
+import { OnchainKitProvider, useMiniKit } from '@coinbase/onchainkit'
 import { config } from '@/lib/wagmi'
 import { base } from 'wagmi/chains'
 
 const queryClient = new QueryClient()
 
-export function Providers({ children }: { children: ReactNode }) {
-  // Call SDK ready() as per Base documentation
+// Inner component that uses useMiniKit hook - must be inside OnchainKitProvider
+function MiniKitReady({ children }: { children: ReactNode }) {
+  const { setFrameReady } = useMiniKit()
+  
   useEffect(() => {
-    const callSdkReady = async () => {
-      try {
-        const { sdk } = await import('@farcaster/miniapp-sdk')
-        await sdk.actions.ready()
-        console.log('✅ SDK ready() called successfully')
-      } catch (error) {
-        console.log('Not in Base app environment:', error)
-      }
+    // Signal to the Base app that the frame is ready to be displayed
+    setFrameReady()
+    console.log('✅ MiniKit setFrameReady() called')
+  }, [setFrameReady])
+
+  // Add Eruda for debugging in production (remove after fixing)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      import('eruda').then((eruda) => {
+        eruda.default.init()
+        console.log('🔧 Eruda debug console initialized')
+      }).catch(() => {
+        // Eruda not available
+      })
     }
-    callSdkReady()
   }, [])
 
+  return <>{children}</>
+}
+
+export function Providers({ children }: { children: ReactNode }) {
   // Theme handling
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -92,7 +103,9 @@ export function Providers({ children }: { children: ReactNode }) {
         miniKit={{ enabled: true, autoConnect: false }}
       >
         <QueryClientProvider client={queryClient}>
-          {children}
+          <MiniKitReady>
+            {children}
+          </MiniKitReady>
         </QueryClientProvider>
       </OnchainKitProvider>
     </WagmiProvider>
