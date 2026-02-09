@@ -10,21 +10,32 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "Base Challenge - Show Up Daily",
-  description: "Join the daily show up challenge on Base",
-  icons: {
-    icon: "/icon.svg",
-    apple: "/icon.svg",
-  },
-  other: {
-    "fc:frame": "vNext",
-    "fc:frame:image": "https://base-challenge-iota.vercel.app/icon.png",
-    "fc:frame:button:1": "Launch Base Challenge",
-    "fc:frame:button:1:action": "launch_frame",
-    "fc:frame:button:1:target": "https://base-challenge-iota.vercel.app",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "Base Challenge - Show Up Daily",
+    description: "Join the daily show up challenge on Base",
+    icons: {
+      icon: "/icon.svg",
+      apple: "/icon.svg",
+    },
+    other: {
+      'fc:miniapp': JSON.stringify({
+        version: 'next',
+        imageUrl: 'https://base-challenge-iota.vercel.app/icon.png',
+        button: {
+          title: 'Launch Base Challenge',
+          action: {
+            type: 'launch_miniapp',
+            name: 'Base Challenge',
+            url: 'https://base-challenge-iota.vercel.app',
+            splashImageUrl: 'https://base-challenge-iota.vercel.app/icon.png',
+            splashBackgroundColor: '#0a2540',
+          },
+        },
+      }),
+    },
+  };
+}
 
 export default function RootLayout({
   children,

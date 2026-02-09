@@ -9,20 +9,21 @@ import { base } from 'wagmi/chains'
 
 const queryClient = new QueryClient()
 
-// Call SDK ready immediately when module loads (before React renders)
-if (typeof window !== 'undefined') {
-  import('@farcaster/miniapp-sdk').then(({ sdk }) => {
-    sdk.actions.ready().then(() => {
-      console.log('✅ SDK ready() called successfully')
-    }).catch((error) => {
-      console.log('SDK ready error:', error)
-    })
-  }).catch((error) => {
-    console.log('Not in Base app environment:', error)
-  })
-}
-
 export function Providers({ children }: { children: ReactNode }) {
+  // Call SDK ready() as per Base documentation
+  useEffect(() => {
+    const callSdkReady = async () => {
+      try {
+        const { sdk } = await import('@farcaster/miniapp-sdk')
+        await sdk.actions.ready()
+        console.log('✅ SDK ready() called successfully')
+      } catch (error) {
+        console.log('Not in Base app environment:', error)
+      }
+    }
+    callSdkReady()
+  }, [])
+
   // Theme handling
   useEffect(() => {
     if (typeof window === 'undefined') return
