@@ -1,19 +1,9 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
-import { Providers } from './providers'
-import Script from 'next/script'
-import BottomNav from '@/components/BottomNav'
-
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Base Challenge - Show Up Daily',
+  title: 'Base Challenge',
   description: 'Join the daily show up challenge on Base',
-  icons: {
-    icon: '/icon.svg',
-    apple: '/icon.svg',
-  },
 }
 
 export default function RootLayout({
@@ -23,17 +13,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <Script
-        id="theme-init"
-        strategy="beforeInteractive"
-      >
-        {`(function(){try{var t=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var e=t?t==='dark':d;document.documentElement.classList.toggle('dark',e);}catch(e){}})();`}
-      </Script>
-      <body className={`${inter.className} bg-primary-light-mode-blue dark:bg-primary-dark-blue text-primary-dark-blue dark:text-primary-white`}>
-        <Providers>
-          {children}
-          <BottomNav />
-        </Providers>
+      <head>
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            window.onerror = function(msg, url, line, col, error) {
+              document.body.innerHTML = '<div style="padding:20px;color:white;background:#0a2540;min-height:100vh;font-family:sans-serif"><h1>JS Error</h1><p>' + msg + '</p><p>Line: ' + line + '</p></div>';
+              return true;
+            };
+          `
+        }} />
+      </head>
+      <body style={{ margin: 0, padding: 0, backgroundColor: '#0a2540' }}>
+        {children}
       </body>
     </html>
   )
