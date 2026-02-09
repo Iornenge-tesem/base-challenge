@@ -3,21 +3,26 @@
 import { ReactNode, useEffect } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiProvider } from 'wagmi'
-import { OnchainKitProvider, useMiniKit } from '@coinbase/onchainkit'
+import { OnchainKitProvider } from '@coinbase/onchainkit'
 import { config } from '@/lib/wagmi'
 import { base } from 'wagmi/chains'
 
 const queryClient = new QueryClient()
 
-// Inner component that uses useMiniKit hook - must be inside OnchainKitProvider
-function MiniKitReady({ children }: { children: ReactNode }) {
-  const { setFrameReady } = useMiniKit()
-  
+export function Providers({ children }: { children: ReactNode }) {
+  // Call SDK ready() as per Base documentation
   useEffect(() => {
-    // Signal to the Base app that the frame is ready to be displayed
-    setFrameReady()
-    console.log('✅ MiniKit setFrameReady() called')
-  }, [setFrameReady])
+    const callSdkReady = async () => {
+      try {
+        const { sdk } = await import('@farcaster/miniapp-sdk')
+        await sdk.actions.ready()
+        console.log('✅ SDK ready() called successfully')
+      } catch (error) {
+        console.log('Not in Base app environment:', error)
+      }
+    }
+    callSdkReady()
+  }, [])
 
   // Add Eruda for debugging in production (remove after fixing)
   useEffect(() => {
@@ -31,10 +36,6 @@ function MiniKitReady({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  return <>{children}</>
-}
-
-export function Providers({ children }: { children: ReactNode }) {
   // Theme handling
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -103,9 +104,7 @@ export function Providers({ children }: { children: ReactNode }) {
         miniKit={{ enabled: true, autoConnect: false }}
       >
         <QueryClientProvider client={queryClient}>
-          <MiniKitReady>
-            {children}
-          </MiniKitReady>
+          {children}
         </QueryClientProvider>
       </OnchainKitProvider>
     </WagmiProvider>
