@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode, useEffect } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiProvider } from 'wagmi'
 import { OnchainKitProvider } from '@coinbase/onchainkit'
@@ -9,31 +9,48 @@ import { base } from 'wagmi/chains'
 
 const queryClient = new QueryClient()
 
-// Call SDK ready IMMEDIATELY at module load - before React renders
-// This is critical to dismiss the splash screen
+// Track if ready() has been called
+let sdkReadyCalled = false
+
+// Call SDK ready IMMEDIATELY when this module loads
 if (typeof window !== 'undefined') {
-  // Use a self-executing async function
-  (async () => {
+  const callReady = async () => {
+    if (sdkReadyCalled) return
+    sdkReadyCalled = true
     try {
       const { sdk } = await import('@farcaster/miniapp-sdk')
       await sdk.actions.ready()
-      console.log('✅ SDK ready() called at module load')
+      console.log('✅ SDK ready() called successfully')
     } catch (error) {
-      console.log('SDK ready error (not in mini app?):', error)
+      console.error('SDK ready() error:', error)
     }
-  })()
+  }
+  // Call immediately
+  callReady()
+  // Also call after a small delay as backup
+  setTimeout(callReady, 100)
+  setTimeout(callReady, 500)
+  // And on DOMContentLoaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', callReady)
+  }
 }
 
 export function Providers({ children }: { children: ReactNode }) {
-  // Add Eruda for debugging in production (remove after fixing)
+  const [mounted, setMounted] = useState(false)
+
+  // Ensure we only render children after mount to avoid hydration issues
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Add Eruda for debugging
   useEffect(() => {
     if (typeof window !== 'undefined') {
       import('eruda').then((eruda) => {
         eruda.default.init()
         console.log('🔧 Eruda debug console initialized')
-      }).catch(() => {
-        // Eruda not available
-      })
+      }).catch(() => {})
     }
   }, [])
 
@@ -96,6 +113,23 @@ export function Providers({ children }: { children: ReactNode }) {
       window.removeEventListener('storage', handleStorage)
     }
   }, [])
+
+  // Show a simple loading state until mounted to prevent hydration issues
+  if (!mounted) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        backgroundColor: '#0a2540',
+        color: 'white',
+        fontSize: '18px'
+      }}>
+        Loading Base Challenge...
+      </div>
+    )
+  }
 
   return (
     <WagmiProvider config={config}>
